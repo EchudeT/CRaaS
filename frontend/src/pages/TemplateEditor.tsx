@@ -1,0 +1,465 @@
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Code2,
+  Copy,
+  Plus,
+  Rocket,
+  Save,
+  Trash2,
+  Wand2,
+  Workflow,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { api } from '@/lib/api'
+import type { Scenario, Template, Validation } from '@/lib/types'
+import { CodeView } from '@/components/CodeView'
+import { TopologyCanvas } from '@/components/TopologyCanvas'
+import { nodeMeta } from '@/components/nodeMeta'
+import { Badge, Button, Card, Field, Input, Modal, Select, toast } from '@/components/ui'
+import { cn, copy } from '@/lib/utils'
+
+const IMAGE_OPTIONS = [
+  'router-vr-8',
+  'switch-vs-8',
+  'fw-ngfw-4',
+  'ubuntu-2204-server',
+  'win10-office',
+  'kali-2024-attacker',
+  'plc-s7-1200',
+  'ids-snort-3',
+  'cloud-internet',
+]
+
+export default function TemplateEditor() {
+  const { id = '' } = useParams()
+  const nav = useNavigate()
+  const [template, setTemplate] = useState<Template | null>(null)
+  const [scenario, setScenario] = useState<Scenario | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
+  const [validation, setValidation] = useState<Validation | null>(null)
+  const [codeDraft, setCodeDraft] = useState('')
+  const [addOpen, setAddOpen] = useState(false)
+  const [newNode, setNewNode] = useState({ name: '新节点', type: 'server', zone: '', ip: '10.0.0.10' })
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    api
+      .template(id)
+      .then((t) => {
+        setTemplate(t)
+        setScenario(t.topology)
+        setCodeDraft(JSON.stringify(t.topology, null, 2))
+      })
+      .catch(() => toast('模板加载失败', 'error'))
+  }, [id])
+
+  useEffect(() => {
+    if (!scenario) return
+    const timer = setTimeout(() => {
+      api.validate(scenario).then(setValidation).catch(() => setValidation(null))
+    }, 350)
+    return () => clearTimeout(timer)
+  }, [scenario])
+
+  const code = useMemo(() => (scenario ? JSON.stringify(scenario, null, 2) : ''), [scenario])
+
+  useEffect(() => {
+    setCodeDraft(code)
+  }, [code])
+
+  const node = scenario?.nodes.find((n) => n.id === selected) ?? null
+
+  const imageSpec = useMemo(
+    () =>
+      node
+        ? JSON.stringify(
+            {
+              image_name: node.image,
+              type: node.type,
+              flavor: node.flavor,
+              cpu: node.cpu,
+              memory: node.memory,
+              disk: node.disk,
+              ports: node.ports,
+              ipv4: node.ip,
+              zone: node.zone,
+            },
+            null,
+            2,
+          )
+        : '',
+    [node],
+  )
+
+  const patchNode = useCallback((patch: Record<string, unknown>) => {
+    if (!selected) return
+    setScenario((s) =>
+      s ? { ...s, nodes: s.nodes.map((n) => (n.id === selected ? { ...n, ...patch } : n)) } : s,
+    )
+  }, [selected])
+
+  function removeNode() {
+    if (!selected || !scenario) return
+    setScenario({
+      ...scenario,
+      nodes: scenario.nodes.filter((n) => n.id !== selected),
+      links: scenario.links.filter((l) => l.source !== selected && l.target !== selected),
+    })
+    setSelected(null)
+  }
+
+  function autoLayout() {
+    if (!scenario) return
+    setScenario({ ...scenario, nodes: scenario.nodes.map((n) => ({ ...n, x: undefined, y: undefined })) })
+  }
+
+  function applyCode() {
+    try {
+      const parsed = JSON.parse(codeDraft) as Scenario
+      if (!parsed.nodes || !parsed.zones) throw new Error('结构不完整')
+      setScenario(parsed)
+      toast('代码已应用，拓扑已刷新')
+    } catch {
+      toast('JSON 解析失败，请检查代码格式', 'error')
+    }
+  }
+
+  function addNode() {
+    if (!scenario) return
+    const zone = newNode.zone || scenario.zones[0]?.id || 'zone_edge'
+    setScenario({
+      ...scenario,
+      nodes: [
+        ...scenario.nodes,
+        {
+          id: `n_${Math.random().toString(36).slice(2, 10)}`,
+          name: newNode.name,
+          type: newNode.type as never,
+          zone,
+          ip: newNode.ip,
+          image: IMAGE_OPTIONS[3],
+          flavor: '2C4G',
+          cpu: 2,
+          memory: 4096,
+          disk: 40,
+          ports: 4,
+          role: '新增节点',
+          status: 'running',
+        },
+      ],
+    })
+    setAddOpen(false)
+    toast('已添加节点，请补全连线与 IP')
+  }
+
+  async function save() {
+    if (!scenario || !template) return
+    setSaving(true)
+    try {
+      const t = await api.updateTemplate(template.id, { topology: scenario })
+      setTemplate(t)
+      toast('模板已保存')
+    } catch {
+      toast('保存失败', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!scenario || !template) {
+    return <div className="py-20 text-center text-[12.5px] text-ink-400">加载中…</div>
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* 顶部工具条 */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+            <Workflow className="h-4 w-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold text-ink-900">{template.name}</span>
+              <Badge className="border-brand-200 bg-brand-50 text-brand-600">{template.business_name}</Badge>
+              <Badge className="border-slate-200 bg-slate-50 text-ink-500">
+                {template.source === 'llm' ? 'LLM 生成' : '规则引擎'}
+              </Badge>
+            </div>
+            <div className="mt-0.5 text-[11.5px] text-ink-400">
+              {scenario.zones.length} 个区域 · {scenario.nodes.length} 个节点 · {scenario.links.length} 条链路
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={autoLayout} icon={<Wand2 className="h-3.5 w-3.5" />}>
+            自动布局
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)} icon={<Plus className="h-3.5 w-3.5" />}>
+            添加节点
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={removeNode}
+            disabled={!selected}
+            icon={<Trash2 className="h-3.5 w-3.5" />}
+          >
+            删除节点
+          </Button>
+          <Button variant="secondary" size="sm" onClick={save} disabled={saving} icon={<Save className="h-3.5 w-3.5" />}>
+            {saving ? '保存中…' : '保存模板'}
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => nav(`/orchestrate/${template.id}`)}
+            icon={<Rocket className="h-3.5 w-3.5" />}
+          >
+            去部署
+          </Button>
+        </div>
+      </div>
+
+      {/* 三栏 */}
+      <div className="grid gap-3 xl:grid-cols-[320px_minmax(0,1fr)_300px]">
+        <Card className="flex min-h-[560px] flex-col overflow-hidden">
+          <div className="flex items-center justify-between border-b border-line px-3 py-2">
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink-700">
+              <Code2 className="h-3.5 w-3.5 text-brand-500" /> 代码编辑器
+            </span>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" onClick={() => setCodeDraft(code)}>
+                重置
+              </Button>
+              <Button variant="outline" size="sm" onClick={applyCode}>
+                应用代码
+              </Button>
+            </div>
+          </div>
+          <CodeView value={codeDraft} onChange={setCodeDraft} height={520} className="flex-1" />
+        </Card>
+
+        <Card className="flex min-h-[560px] flex-col overflow-hidden">
+          <div className="flex items-center justify-between border-b border-line px-3 py-2">
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink-700">
+              <Workflow className="h-3.5 w-3.5 text-brand-500" /> 图形编辑器
+            </span>
+            <span className="text-[11px] text-ink-400">拖拽节点可调整布局，保存后生效</span>
+          </div>
+          <div className="flex-1 p-3">
+            <TopologyCanvas
+              scenario={scenario}
+              height="100%"
+              className="h-full min-h-[500px]"
+              editable
+              withLabels
+              selectedId={selected}
+              onSelect={setSelected}
+              onDragStop={(positions) =>
+                setScenario((s) =>
+                  s
+                    ? {
+                        ...s,
+                        nodes: s.nodes.map((n) =>
+                          positions[n.id] ? { ...n, x: positions[n.id].x, y: positions[n.id].y } : n,
+                        ),
+                      }
+                    : s,
+                )
+              }
+            />
+          </div>
+        </Card>
+
+        <Card className="flex min-h-[560px] flex-col overflow-hidden">
+          <div className="flex items-center justify-between border-b border-line px-3 py-2">
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink-700">
+              <CheckCircle2 className="h-3.5 w-3.5 text-brand-500" /> 拓扑检查器
+            </span>
+            <Badge
+              className={
+                validation?.passed ? 'border-ok/25 bg-ok/10 text-ok' : 'border-danger/25 bg-danger/10 text-danger'
+              }
+              dot
+            >
+              {validation?.passed ? '通过' : `${validation?.error_count ?? 0} 错误`}
+            </Badge>
+          </div>
+          <div className="flex-1 overflow-y-auto px-3 py-3">
+            <div className="mb-3 grid grid-cols-2 gap-2">
+              {[
+                ['节点总数', validation?.stats.nodes ?? 0],
+                ['连接总数', validation?.stats.links ?? 0],
+                ['区域数', scenario.zones.length],
+                ['网段数', validation?.stats.subnets ?? 0],
+              ].map(([k, v]) => (
+                <div key={k as string} className="rounded-lg border border-line bg-slate-50/60 px-2.5 py-2">
+                  <div className="text-[10.5px] text-ink-400">{k}</div>
+                  <div className="mono-num text-[15px] font-semibold text-ink-900">{v}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-400">配置检查</div>
+            {node ? (
+              <div className="space-y-2.5">
+                <Field label="节点名称">
+                  <Input value={node.name} onChange={(e) => patchNode({ name: e.target.value })} />
+                </Field>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="类型">
+                    <Select
+                      value={node.type}
+                      onChange={(v) => patchNode({ type: v })}
+                      options={Object.entries(nodeMeta).map(([k, m]) => ({ value: k, label: m.label }))}
+                    />
+                  </Field>
+                  <Field label="区域">
+                    <Select
+                      value={node.zone}
+                      onChange={(v) => patchNode({ zone: v })}
+                      options={scenario.zones.map((z) => ({ value: z.id, label: z.name }))}
+                    />
+                  </Field>
+                </div>
+                <Field label="IP 地址">
+                  <Input value={node.ip} onChange={(e) => patchNode({ ip: e.target.value })} className="mono-num" />
+                </Field>
+                <Field label="镜像">
+                  <Select
+                    value={node.image}
+                    onChange={(v) => patchNode({ image: v })}
+                    options={IMAGE_OPTIONS.map((i) => ({ value: i, label: i }))}
+                  />
+                </Field>
+                <div className="grid grid-cols-3 gap-2">
+                  <Field label="CPU">
+                    <Input
+                      type="number"
+                      value={node.cpu}
+                      onChange={(e) => patchNode({ cpu: Number(e.target.value) })}
+                      className="mono-num"
+                    />
+                  </Field>
+                  <Field label="内存MB">
+                    <Input
+                      type="number"
+                      value={node.memory}
+                      onChange={(e) => patchNode({ memory: Number(e.target.value) })}
+                      className="mono-num"
+                    />
+                  </Field>
+                  <Field label="磁盘GB">
+                    <Input
+                      type="number"
+                      value={node.disk}
+                      onChange={(e) => patchNode({ disk: Number(e.target.value) })}
+                      className="mono-num"
+                    />
+                  </Field>
+                </div>
+                <Field label="端口数">
+                  <Input
+                    type="number"
+                    value={node.ports}
+                    onChange={(e) => patchNode({ ports: Number(e.target.value) })}
+                    className="mono-num"
+                  />
+                </Field>
+
+                <div className="overflow-hidden rounded-lg border border-line">
+                  <div className="flex items-center justify-between border-b border-line bg-slate-50 px-2.5 py-1.5">
+                    <span className="text-[10.5px] font-medium text-ink-500">镜像 JSON</span>
+                    <button
+                      onClick={() => {
+                        copy(imageSpec)
+                        toast('镜像 JSON 已复制')
+                      }}
+                      className="flex cursor-pointer items-center gap-1 text-[10.5px] text-brand-600 hover:underline"
+                    >
+                      <Copy className="h-3 w-3" /> 复制
+                    </button>
+                  </div>
+                  <CodeView value={imageSpec} height={176} />
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-line py-6 text-center text-[11.5px] text-ink-400">
+                点击画布节点进行配置
+              </div>
+            )}
+
+            {validation && validation.issues.length > 0 && (
+              <div className="mt-3">
+                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-400">校验提示</div>
+                <div className="space-y-1.5">
+                  {validation.issues.slice(0, 6).map((i, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        'flex items-start gap-1.5 rounded-md border px-2 py-1.5 text-[11px] leading-4',
+                        i.level === 'error' ? 'border-danger/20 bg-danger/5 text-danger' : 'border-warn/20 bg-warn/5 text-warn',
+                      )}
+                    >
+                      <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                      <span className="text-ink-600">{i.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      <Modal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="添加节点"
+        width="max-w-md"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setAddOpen(false)}>
+              取消
+            </Button>
+            <Button variant="primary" onClick={addNode}>
+              添加
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="节点名称" required>
+            <Input value={newNode.name} onChange={(e) => setNewNode({ ...newNode, name: e.target.value })} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="类型">
+              <Select
+                value={newNode.type}
+                onChange={(v) => setNewNode({ ...newNode, type: v })}
+                options={Object.entries(nodeMeta).map(([k, m]) => ({ value: k, label: m.label }))}
+              />
+            </Field>
+            <Field label="所属区域">
+              <Select
+                value={newNode.zone || scenario.zones[0]?.id || ''}
+                onChange={(v) => setNewNode({ ...newNode, zone: v })}
+                options={scenario.zones.map((z) => ({ value: z.id, label: z.name }))}
+              />
+            </Field>
+          </div>
+          <Field label="IP 地址" required>
+            <Input
+              value={newNode.ip}
+              onChange={(e) => setNewNode({ ...newNode, ip: e.target.value })}
+              className="mono-num"
+            />
+          </Field>
+        </div>
+      </Modal>
+    </div>
+  )
+}

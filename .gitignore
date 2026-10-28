@@ -1,0 +1,28 @@
+# 依赖
+node_modules/
+.venv/
+
+# 构建产物
+dist/
+build/
+
+# 运行时数据与日志
+*.log
+backend/data/*.db
+backend/data/*.db-*
+
+# 缓存
+__pycache__/
+*.py[cod]
+.vite/
+.cache/
+*.tsbuildinfo
+
+# IDE
+.codebuddy/
+.vscode/
+.idea/
+.DS_Store
+
+# 本地环境变量
+.env
