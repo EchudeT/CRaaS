@@ -30,6 +30,7 @@ export const nodeMeta: Record<NodeType, { icon: LucideIcon; color: string; label
   plc: { icon: Cpu, color: '#D98324', label: 'PLC 设备' },
   ids: { icon: Radar, color: '#0891B2', label: '入侵检测' },
   cloud: { icon: Cloud, color: '#3A93DE', label: '互联网' },
+  transport: { icon: Network, color: '#0E7C86', label: 'PTN传送设备' },
 }
 
 export const businessIcon: Record<string, LucideIcon> = {

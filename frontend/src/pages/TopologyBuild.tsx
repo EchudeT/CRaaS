@@ -9,7 +9,7 @@ import {
   Sparkles,
   Wand2,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api, type Meta } from '@/lib/api'
 import type { GenerateResult } from '@/lib/types'
@@ -18,31 +18,36 @@ import { TopologyCanvas } from '@/components/TopologyCanvas'
 import { Badge, Button, Card, CardHeader, Field, Input, Modal, Select, Textarea, Tabs, toast } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
-const STEPS = ['解析自然语言意图', '抽取区域与网段', '生成 IaC 描述代码', '渲染可视化拓扑']
+const SCENE_PRESETS = [
+  { name: '5G 核心网', description: '创建通信网络及服务场景：部署2个AMF实例、1个SMF和1个UPF。AMF通过N11接口连接SMF，SMF通过N4/PFCP接口控制UPF。' },
+  { name: '数据中心', description: '创建新型数据中心网络及服务场景：部署2台骨干接入路由器AR、2台资源池出口路由器CE和2台SDN TOR交换机。AR通过100GE链路连接CE，CE通过25GE链路连接SDN TOR交换机。' },
+  { name: '城域网', description: '创建新型城域网及服务场景：部署2台核心PTN设备、4台汇聚PTN设备、6台接入PTN设备。核心PTN通过100GE链路连接汇聚PTN，汇聚PTN通过10GE链路连接接入PTN。' },
+]
 
 export default function TopologyBuild() {
   const nav = useNavigate()
   const [meta, setMeta] = useState<Meta | null>(null)
   const [desc, setDesc] = useState(
-    '创建一个办公环境，包含办公区、服务器区、运维区三个子网，核心路由器通过边界防火墙接入互联网；办公区部署6台办公电脑，服务器区部署2台服务器，运维区部署2台运维终端。',
+    SCENE_PRESETS[0].description,
   )
   const [industry, setIndustry] = useState('general')
   const [business, setBusiness] = useState('drill')
   const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState(0)
+  const [scene, setScene] = useState('auto')
+  const [stage, setStage] = useState('')
+  const [elapsed, setElapsed] = useState(0)
+  const [error, setError] = useState('')
+  const mounted = useRef(true)
   const [result, setResult] = useState<GenerateResult | null>(null)
   const [tab, setTab] = useState('topo')
   const [selected, setSelected] = useState<string | null>(null)
-  const [presets, setPresets] = useState<{ name: string; description: string }[]>([])
   const [saveOpen, setSaveOpen] = useState(false)
   const [saveName, setSaveName] = useState('')
 
   useEffect(() => {
+    mounted.current = true
     api.meta().then(setMeta).catch(() => setMeta(null))
-    api
-      .presets()
-      .then((r) => setPresets(r.items.map((i) => ({ name: i.name, description: i.description }))))
-      .catch(() => setPresets([]))
+    return () => { mounted.current = false }
   }, [])
 
   const code = useMemo(() => {
@@ -56,20 +61,35 @@ export default function TopologyBuild() {
       return
     }
     setLoading(true)
-    setStep(0)
-    const timer = setInterval(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 520)
+    setResult(null)
+    setError('')
+    setElapsed(0)
+    setStage('提交生成任务…')
+    const started = Date.now()
+    const timer = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000)
     try {
-      const r = await api.generate({ description: desc, industry, business })
+      const currentMeta = await api.meta()
+      setMeta(currentMeta)
+      let job = await api.startGeneration({ description: desc, industry, business, scene })
+      while (job.status === 'queued' || job.status === 'running') {
+        if (!mounted.current) return
+        setStage(job.status === 'queued' ? '等待模型处理…' : `${job.stage === 'repairing' ? '正在修复并校验结果' : 'AI 正在抽取实体与关系'} · 已接收 ${job.characters.toLocaleString()} 字符`)
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+        if (!mounted.current) return
+        job = await api.generationJob(job.id)
+      }
+      if (job.status === 'failed' || !job.result) throw new Error(job.error || '生成失败')
+      const r = job.result
       setResult(r)
       setTab('topo')
       setSelected(null)
-      toast(`已生成 ${r.scenario.nodes.length} 个节点 / ${r.scenario.zones.length} 个区域（${r.generator === 'llm' ? 'LLM' : '规则引擎'}）`)
+      toast(`已由 ${r.model || 'AI'} 生成 ${r.scenario.nodes.length} 个逻辑节点 / ${r.scenario.links.length} 条关系`)
     } catch (e) {
-      toast('生成失败，请检查后端服务', 'error')
+      const message = e instanceof Error ? e.message : '生成失败，请检查后端服务'
+      if (mounted.current) { setError(message); toast(message, 'error') }
     } finally {
       clearInterval(timer)
-      setLoading(false)
-      setStep(STEPS.length - 1)
+      if (mounted.current) setLoading(false)
     }
   }
 
@@ -78,9 +98,9 @@ export default function TopologyBuild() {
     try {
       const t = await api.createTemplate({
         name: saveName || result.scenario.name,
-        description: desc,
-        industry,
-        business,
+        description: result.scenario.description,
+        industry: result.scenario.industry,
+        business: result.scenario.business,
         topology: result.scenario,
         source: result.generator,
       })
@@ -100,22 +120,29 @@ export default function TopologyBuild() {
         <Card className="flex flex-col">
           <CardHeader
             title="描述场景"
-            desc="用自然语言描述区域划分、节点数量与 IP 分配，系统自动生成 IaC 代码"
+            desc="描述通信网络、数据中心或城域网，AI 抽取实体、数量和连接关系"
             icon={<Wand2 className="h-4 w-4" />}
             right={
               <Badge className={meta?.llm.ready ? 'border-ok/25 bg-ok/10 text-ok' : 'border-slate-200 bg-slate-50 text-ink-500'} dot>
-                {meta?.llm.ready ? `LLM · ${meta.llm.model}` : '规则引擎'}
+                {meta?.llm.ready ? `AI · ${meta.llm.model}` : '模型未配置'}
               </Badge>
             }
           />
           <div className="flex flex-1 flex-col gap-3 px-5 py-4">
             <Textarea
               value={desc}
+              disabled={loading}
               onChange={(e) => setDesc(e.target.value)}
               rows={9}
-              placeholder="例如：创建一个办公环境，包含办公区、服务器区、运维区三个子网，核心路由器通过边界防火墙接入互联网；办公区部署 6 台办公电脑…"
+              placeholder="描述设备、数量和关系，例如：AMF 通过 N11 接口连接 SMF…"
               className="resize-none"
             />
+            <Field label="网络场景">
+              <Select value={scene} onChange={setScene} options={[
+                { value: 'auto', label: '自动识别场景' },
+                ...(meta?.scenes ?? []).map((s) => ({ value: s.id, label: s.name })),
+              ]} />
+            </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="行业选择">
                 <Select
@@ -139,10 +166,11 @@ export default function TopologyBuild() {
             <div>
               <div className="mb-1.5 text-[11.5px] text-ink-400">示例场景</div>
               <div className="flex flex-wrap gap-1.5">
-                {presets.slice(0, 4).map((p) => (
+                {SCENE_PRESETS.map((p) => (
                   <button
                     key={p.name}
-                    onClick={() => setDesc(p.description)}
+                    onClick={() => { setDesc(p.description); setScene('auto') }}
+                    disabled={loading}
                     className="cursor-pointer rounded-md border border-line bg-white px-2 py-1 text-[11.5px] text-ink-700 transition-colors hover:border-brand-300 hover:text-brand-600"
                   >
                     {p.name}
@@ -166,21 +194,12 @@ export default function TopologyBuild() {
             </div>
 
             {loading && (
-              <div className="rounded-lg border border-brand-100 bg-brand-50/60 px-3 py-2.5">
-                {STEPS.map((s, i) => (
-                  <div key={s} className="flex items-center gap-2 py-0.5 text-[11.5px]">
-                    {i < step ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-ok" />
-                    ) : i === step ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-500" />
-                    ) : (
-                      <span className="h-3.5 w-3.5 rounded-full border border-line" />
-                    )}
-                    <span className={cn(i <= step ? 'text-ink-700' : 'text-ink-400')}>{s}</span>
-                  </div>
-                ))}
+              <div role="status" className="space-y-1 rounded-lg border border-brand-100 bg-brand-50/60 px-3 py-2.5 text-[11.5px] text-ink-700">
+                <div className="flex items-center gap-2"><Loader2 className="h-3.5 w-3.5 animate-spin" />{stage}</div>
+                <div>已用时 {elapsed} 秒。长需求可能需要 1–3 分钟。</div>
               </div>
             )}
+            {error && <div role="alert" className="rounded-lg border border-danger/20 bg-danger/5 px-3 py-2 text-[12px] text-danger">{error}</div>}
           </div>
         </Card>
 
@@ -188,7 +207,7 @@ export default function TopologyBuild() {
         <Card className="flex min-w-0 flex-col">
           <CardHeader
             title="生成结果"
-            desc={result ? `${result.scenario.zones.length} 个区域 · ${result.scenario.nodes.length} 个节点 · ${result.scenario.links.length} 条链路` : '生成后可查看代码与拓扑'}
+            desc={result ? `${result.scenario.zones.length} 个区域 · ${result.scenario.nodes.length} 个逻辑节点（总数量 ${result.scenario.nodes.reduce((sum, n) => sum + (n.quantity ?? 1), 0)}）· ${result.scenario.links.length} 条关系` : '生成后可查看代码与拓扑'}
             icon={<Network className="h-4 w-4" />}
             right={
               <Tabs
@@ -206,6 +225,7 @@ export default function TopologyBuild() {
               tab === 'topo' ? (
                 <TopologyCanvas
                   scenario={result.scenario}
+                  withLabels
                   height={560}
                   selectedId={selected}
                   onSelect={setSelected}
@@ -225,7 +245,7 @@ export default function TopologyBuild() {
               <div className="flex h-[560px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-line bg-slate-50/50 text-ink-400">
                 <Network className="h-8 w-8" />
                 <div className="text-[12.5px]">左侧输入场景描述后点击「生成拓扑图」</div>
-                <div className="text-[11px]">支持区域划分、节点数量、IP 网段、安全设备等描述</div>
+                <div className="text-[11px]">支持三类网络场景的实体、数量、接口和关系抽取</div>
               </div>
             )}
           </div>
@@ -237,7 +257,7 @@ export default function TopologyBuild() {
         <Card>
           <CardHeader
             title="拓扑校验"
-            desc="基于区域网段、IP 唯一性、连通性与端口容量的规则校验"
+            desc="检查实体引用、关系端点与数量；逻辑拓扑中的未知参数保持为空"
             icon={<CheckCircle2 className="h-4 w-4" />}
             right={
               result ? (
@@ -255,7 +275,7 @@ export default function TopologyBuild() {
               result.validation.issues.length === 0 ? (
                 <div className="flex items-center gap-2 rounded-lg border border-ok/20 bg-ok/5 px-3 py-3 text-[12.5px] text-ok">
                   <CheckCircle2 className="h-4 w-4" />
-                  未发现冲突：网段无重叠、IP 无重复、无孤岛节点，可直接保存为模板。
+                  逻辑结构校验通过，可保存并编辑。真实部署前还需映射镜像、规格与网络。
                 </div>
               ) : (
                 <div className="space-y-1.5">
@@ -316,16 +336,24 @@ export default function TopologyBuild() {
               <div className="space-y-2.5 text-[12px]">
                 {[
                   ['节点类型', node.role],
+                  ['实体编码', node.entity_type_id || '—'],
+                  ['数量', String(node.quantity ?? 1)],
                   ['所属区域', result?.scenario.zones.find((z) => z.id === node.zone)?.name ?? '—'],
-                  ['IP 地址', node.ip],
-                  ['镜像', node.image],
-                  ['规格', `${node.flavor} · ${node.cpu}C / ${(node.memory / 1024).toFixed(0)}G`],
-                  ['磁盘', `${node.disk} GB`],
-                  ['端口数', String(node.ports)],
+                  ['IP 地址', node.ip || '未指定'],
+                  ['镜像', node.image || '待映射'],
+                  ['原文依据', node.evidence || '—'],
                 ].map(([k, v]) => (
                   <div key={k} className="flex items-start justify-between gap-3 border-b border-dashed border-line pb-2 last:border-0">
                     <span className="text-ink-500">{k}</span>
                     <span className="text-right font-medium text-ink-900">{v}</span>
+                  </div>
+                ))}
+                {node.attributes && <pre className="overflow-auto rounded-lg bg-slate-50 p-3 text-[11px]">{JSON.stringify(node.attributes, null, 2)}</pre>}
+                {result?.scenario.links.filter((l) => l.source === node.id || l.target === node.id).map((l) => (
+                  <div key={l.id} className="rounded-lg border border-line p-2 text-[11px]">
+                    <div>{result.scenario.nodes.find((n) => n.id === l.source)?.name} → {result.scenario.nodes.find((n) => n.id === l.target)?.name}</div>
+                    <div className="text-ink-500">{[l.relation_type, l.interface, l.protocol, l.bandwidth].filter(Boolean).join(' · ')}</div>
+                    {l.evidence && <div className="mt-1 text-ink-400">{l.evidence}</div>}
                   </div>
                 ))}
               </div>
@@ -340,7 +368,7 @@ export default function TopologyBuild() {
         open={saveOpen}
         onClose={() => setSaveOpen(false)}
         title="保存为场景模板"
-        desc="保存后可进入模板编辑器继续调整，或直接用于实例化部署"
+        desc="保存后进入模板编辑器。逻辑拓扑须完成资源映射后才能部署。"
         width="max-w-lg"
         footer={
           <>

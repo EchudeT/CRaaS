@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://craas.local/schemas/topology-extraction.schema.json",
+  "title": "运营商网络拓扑结构化抽取结果",
+  "type": "object",
+  "required": [
+    "primary_scene",
+    "primary_scene_name",
+    "secondary_scenes",
+    "scene_confidence",
+    "entities",
+    "relations",
+    "unresolved_items"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "primary_scene": {
+      "type": "string",
+      "enum": [
+        "communication_network_and_services",
+        "new_data_center_network_and_services",
+        "new_metropolitan_network_and_services"
+      ]
+    },
+    "primary_scene_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "secondary_scenes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "communication_network_and_services",
+          "new_data_center_network_and_services",
+          "new_metropolitan_network_and_services"
+        ]
+      }
+    },
+    "scene_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "instance_id",
+          "entity_type_id",
+          "raw_name",
+          "canonical_name",
+          "category",
+          "quantity",
+          "attributes",
+          "evidence",
+          "confidence"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "raw_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "canonical_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "attributes": {
+            "type": "object"
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "entity_type_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "target",
+          "relation_type",
+          "interface",
+          "protocol",
+          "evidence",
+          "confidence"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "relation_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interface": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "bandwidth": {
+            "type": "string",
+            "description": "原文明确的链路速率，例如 100Gbps；未指定则为空。兼容旧抽取结果，可省略。"
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "unresolved_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -3,6 +3,7 @@ import type {
   ComputeRes,
   DispatchEvent,
   GenerateResult,
+  GenerationJob,
   ImageRes,
   Instance,
   MonitorOverview,
@@ -23,7 +24,12 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
   })
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(text || `请求失败 ${res.status}`)
+    let message = text || `请求失败 ${res.status}`
+    try {
+      const parsed = JSON.parse(text)
+      if (typeof parsed.detail === 'string') message = parsed.detail
+    } catch { /* Non-JSON errors retain the original message. */ }
+    throw new Error(message)
   }
   return res.json() as Promise<T>
 }
@@ -37,6 +43,7 @@ export interface Meta {
   stations: { id: string; name: string; region: string; latency: string }[]
   profiles: { id: string; name: string; cpu: number; memory: number }[]
   llm: { ready: boolean; mode: string; model: string; fallback: string }
+  scenes?: { id: string; name: string }[]
 }
 
 export const api = {
@@ -45,6 +52,9 @@ export const api = {
   presets: () => req<{ items: { name: string; description: string; topology: Scenario }[] }>('/topology/presets'),
   generate: (body: { description: string; industry?: string; business?: string; name?: string }) =>
     post<GenerateResult>('/topology/generate', body),
+  startGeneration: (body: { description: string; industry?: string; business?: string; scene?: string }) =>
+    post<GenerationJob>('/topology/jobs', body),
+  generationJob: (id: string) => req<GenerationJob>(`/topology/jobs/${id}`),
   rebuild: (body: { description: string; industry?: string; business?: string; name?: string }) =>
     post<GenerateResult>('/topology/rebuild', body),
   validate: (topology: Scenario) => post<Validation>('/topology/validate', { topology }),

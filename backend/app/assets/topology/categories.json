@@ -1,0 +1,30 @@
+{
+  "communication_network_and_services": {
+    "access_and_network_domain": "终端、接入网与网络域",
+    "five_g_core": "5G核心网",
+    "four_g_and_legacy_core": "4G及传统分组核心网",
+    "ims_and_voice_service": "IMS与语音服务",
+    "charging_and_support": "计费与支撑系统",
+    "telco_cloud_infrastructure": "电信云网络与安全基础设施",
+    "management_and_orchestration": "管理与编排"
+  },
+  "new_data_center_network_and_services": {
+    "backbone_and_external_interconnection": "骨干与外部互联",
+    "security_and_traffic_protection": "安全与流量防护",
+    "fabric_and_aggregation_network": "交换矩阵与汇聚网络",
+    "management_network": "管理网络",
+    "pod_network_and_compute": "POD网络与计算",
+    "storage_and_backup": "存储与备份"
+  },
+  "new_metropolitan_network_and_services": {
+    "regional_center_and_network_domain": "大区中心与网络域",
+    "mobile_core_edge": "移动核心网边缘功能",
+    "ptn_transport_network": "PTN承载网",
+    "spn_transport_network": "SPN承载网",
+    "ip_and_optical_transport": "IP与光传送网络",
+    "radio_access_network": "无线接入网",
+    "fixed_access_network": "固定接入网",
+    "metro_network_services": "城域网络服务",
+    "management_and_support": "管理、同步与监测"
+  }
+}

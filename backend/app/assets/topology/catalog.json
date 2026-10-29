@@ -1,0 +1,1955 @@
+{
+  "version": "1.0.0",
+  "source": "training_sets_only",
+  "scenes": {
+    "communication_network_and_services": {
+      "scene_name": "通信网络及服务",
+      "training_sample_count": 200,
+      "entities": [
+        {
+          "entity_type_id": "CN_UE",
+          "canonical_name": "用户设备UE",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "用户设备UE",
+            "UE",
+            "用户设备",
+            "用户终端",
+            "移动终端",
+            "终端设备"
+          ]
+        },
+        {
+          "entity_type_id": "CN_ENB",
+          "canonical_name": "4G基站eNB",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "4G基站eNB",
+            "eNB",
+            "eNodeB",
+            "4G基站",
+            "LTE基站",
+            "演进型NodeB"
+          ]
+        },
+        {
+          "entity_type_id": "CN_GNB",
+          "canonical_name": "5G基站gNB",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "5G基站gNB",
+            "gNB",
+            "gNodeB",
+            "5G基站",
+            "gNB SA",
+            "gNB NSA",
+            "NR基站"
+          ]
+        },
+        {
+          "entity_type_id": "CN_E_UTRAN",
+          "canonical_name": "E-UTRAN",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "E-UTRAN",
+            "LTE无线接入网",
+            "4G无线接入网",
+            "演进UMTS陆地无线接入网"
+          ]
+        },
+        {
+          "entity_type_id": "CN_NG_RAN",
+          "canonical_name": "NG-RAN",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "NG-RAN",
+            "5G无线接入网",
+            "下一代无线接入网",
+            "RAN",
+            "5G RAN"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IP_BEARER_NETWORK",
+          "canonical_name": "IP承载网",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "IP承载网",
+            "IP专用承载网",
+            "移动承载网",
+            "承载网络",
+            "IP传送网"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CMNET_NETWORK",
+          "canonical_name": "CMNET网络",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "CMNET网络",
+            "CMNET",
+            "CMNET骨干",
+            "CMNET省网",
+            "中国移动互联网",
+            "移动互联网骨干网"
+          ]
+        },
+        {
+          "entity_type_id": "CN_DATA_NETWORK_DN",
+          "canonical_name": "数据网络DN",
+          "category_id": "access_and_network_domain",
+          "aliases": [
+            "数据网络DN",
+            "DN",
+            "Data Network",
+            "数据网",
+            "外部数据网络",
+            "业务数据网络"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_AMF",
+          "canonical_name": "AMF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "AMF",
+            "接入和移动性管理功能",
+            "接入移动管理功能",
+            "AMF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_SMF",
+          "canonical_name": "SMF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "SMF",
+            "会话管理功能",
+            "会话管理网元",
+            "SMF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_UPF",
+          "canonical_name": "UPF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "UPF",
+            "用户面功能",
+            "用户面网元",
+            "UPF网元",
+            "5G用户面"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_PCF",
+          "canonical_name": "PCF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "PCF",
+            "策略控制功能",
+            "策略控制网元",
+            "PCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_UDM",
+          "canonical_name": "UDM",
+          "category_id": "five_g_core",
+          "aliases": [
+            "UDM",
+            "统一数据管理",
+            "统一数据管理功能",
+            "UDM网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_AUSF",
+          "canonical_name": "AUSF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "AUSF",
+            "认证服务器功能",
+            "认证服务功能",
+            "5G认证网元",
+            "AUSF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_NRF",
+          "canonical_name": "NRF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "NRF",
+            "网络仓库功能",
+            "网络功能仓库",
+            "NF注册发现中心",
+            "NRF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_NSSF",
+          "canonical_name": "NSSF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "NSSF",
+            "网络切片选择功能",
+            "切片选择网元",
+            "NSSF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_NEF",
+          "canonical_name": "NEF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "NEF",
+            "网络开放功能",
+            "能力开放网元",
+            "网络能力开放功能",
+            "NEF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_AF",
+          "canonical_name": "AF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "AF",
+            "应用功能",
+            "应用功能网元",
+            "Application Function",
+            "AF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_UDR",
+          "canonical_name": "UDR",
+          "category_id": "five_g_core",
+          "aliases": [
+            "UDR",
+            "统一数据仓库",
+            "统一数据存储库",
+            "UDR网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_5G_EIR",
+          "canonical_name": "5G-EIR",
+          "category_id": "five_g_core",
+          "aliases": [
+            "5G-EIR",
+            "5G设备标识注册",
+            "5G设备身份寄存器",
+            "设备黑名单网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_SMSF",
+          "canonical_name": "SMSF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "SMSF",
+            "短消息服务功能",
+            "5G短信功能",
+            "SMSF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_5GC_CHF",
+          "canonical_name": "CHF",
+          "category_id": "five_g_core",
+          "aliases": [
+            "CHF",
+            "计费功能",
+            "融合计费功能",
+            "5G计费网元",
+            "Charging Function"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_MME",
+          "canonical_name": "MME",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "MME",
+            "移动性管理实体",
+            "4G移动管理网元",
+            "MME网元",
+            "MME+"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_SGW_C",
+          "canonical_name": "S-GW-C",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "S-GW-C",
+            "SGW-C",
+            "服务网关控制面",
+            "SGW控制面",
+            "CUPS SGW-C"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_SGW_U",
+          "canonical_name": "S-GW-U",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "S-GW-U",
+            "SGW-U",
+            "服务网关用户面",
+            "SGW用户面",
+            "CUPS SGW-U"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_PGW_C",
+          "canonical_name": "P-GW-C",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "P-GW-C",
+            "PGW-C",
+            "PDN网关控制面",
+            "PGW控制面",
+            "CUPS PGW-C"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_PGW_U",
+          "canonical_name": "P-GW-U",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "P-GW-U",
+            "PGW-U",
+            "PDN网关用户面",
+            "PGW用户面",
+            "CUPS PGW-U"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_HSS",
+          "canonical_name": "HSS",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "HSS",
+            "归属用户服务器",
+            "HSS FE",
+            "HSS BE",
+            "HSS前端",
+            "HSS后端",
+            "IMS HSS"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_PCRF",
+          "canonical_name": "PCRF",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "PCRF",
+            "策略和计费规则功能",
+            "4G策略控制",
+            "PCRF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_SPR",
+          "canonical_name": "SPR",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "SPR",
+            "签约数据存储库",
+            "用户策略数据仓库",
+            "策略签约库"
+          ]
+        },
+        {
+          "entity_type_id": "CN_EPC_EPDG",
+          "canonical_name": "ePDG",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "ePDG",
+            "演进分组数据网关",
+            "非信任接入网关",
+            "WiFi接入网关"
+          ]
+        },
+        {
+          "entity_type_id": "CN_LEGACY_SGSN",
+          "canonical_name": "SGSN",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "SGSN",
+            "服务GPRS支持节点",
+            "2G/3G分组域服务节点",
+            "SGSN网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_LEGACY_GGSN",
+          "canonical_name": "GGSN",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "GGSN",
+            "网关GPRS支持节点",
+            "2G/3G分组域网关",
+            "GGSN网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_LEGACY_HLR",
+          "canonical_name": "HLR",
+          "category_id": "four_g_and_legacy_core",
+          "aliases": [
+            "HLR",
+            "归属位置寄存器",
+            "用户归属寄存器",
+            "HLR网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_SUBSYSTEM",
+          "canonical_name": "IMS系统",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "IMS系统",
+            "IMS",
+            "IP多媒体子系统",
+            "IMS域",
+            "语音IMS",
+            "VoLTE/VoNR核心"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_SBC",
+          "canonical_name": "SBC",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "SBC",
+            "会话边界控制器",
+            "IMS边界控制器",
+            "语音边界网关"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_P_CSCF",
+          "canonical_name": "P-CSCF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "P-CSCF",
+            "代理呼叫会话控制功能",
+            "IMS代理节点",
+            "P-CSCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_I_CSCF",
+          "canonical_name": "I-CSCF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "I-CSCF",
+            "查询呼叫会话控制功能",
+            "IMS查询节点",
+            "I-CSCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_S_CSCF",
+          "canonical_name": "S-CSCF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "S-CSCF",
+            "服务呼叫会话控制功能",
+            "IMS服务节点",
+            "S-CSCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_SLF",
+          "canonical_name": "SLF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "SLF",
+            "签约定位功能",
+            "HSS定位功能",
+            "SLF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_MGCF",
+          "canonical_name": "MGCF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "MGCF",
+            "媒体网关控制功能",
+            "IMS媒体网关控制器",
+            "MGCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_IM_MGW",
+          "canonical_name": "IM-MGW",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "IM-MGW",
+            "IP多媒体媒体网关",
+            "IMS媒体网关",
+            "媒体转换网关"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_MRFC",
+          "canonical_name": "MRFC",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "MRFC",
+            "媒体资源功能控制器",
+            "媒体资源控制功能",
+            "MRFC网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_MRFP",
+          "canonical_name": "MRFP",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "MRFP",
+            "媒体资源功能处理器",
+            "媒体资源处理功能",
+            "MRFP网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_BGCF",
+          "canonical_name": "BGCF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "BGCF",
+            "出口网关控制功能",
+            "IMS出口路由功能",
+            "BGCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_IBCF",
+          "canonical_name": "IBCF",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "IBCF",
+            "互联边界控制功能",
+            "IMS边界网关",
+            "IBCF网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_IMS_TRGW",
+          "canonical_name": "TrGW",
+          "category_id": "ims_and_voice_service",
+          "aliases": [
+            "TrGW",
+            "转换网关",
+            "IMS转换网关",
+            "媒体转换边界网关"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_BOSS",
+          "canonical_name": "BOSS系统",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "BOSS系统",
+            "BOSS",
+            "业务运营支撑系统",
+            "计费营账系统",
+            "运营支撑系统"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_CG",
+          "canonical_name": "计费网关CG",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "计费网关CG",
+            "CG",
+            "计费网关",
+            "Charging Gateway",
+            "话单网关"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_DRA",
+          "canonical_name": "DRA",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "DRA",
+            "Diameter路由代理",
+            "Diameter信令路由器",
+            "Diameter信令网"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_STP",
+          "canonical_name": "STP",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "STP",
+            "信令转接点",
+            "七号信令转接点",
+            "SS7信令路由器"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_DNS",
+          "canonical_name": "DNS服务器",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "DNS服务器",
+            "DNS",
+            "域名解析服务器",
+            "运营商DNS"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_ABMF",
+          "canonical_name": "ABMF",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "ABMF",
+            "账户余额管理功能",
+            "余额管理功能",
+            "Account Balance Management Function"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_RF",
+          "canonical_name": "RF",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "RF",
+            "Rating Function",
+            "计费批价功能",
+            "费率处理功能"
+          ]
+        },
+        {
+          "entity_type_id": "CN_SUPPORT_AAA",
+          "canonical_name": "AAA服务器",
+          "category_id": "charging_and_support",
+          "aliases": [
+            "AAA服务器",
+            "AAA",
+            "认证授权计费服务器",
+            "Radius服务器"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_CE_ROUTER",
+          "canonical_name": "CE路由器",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "CE路由器",
+            "CE",
+            "网管CE",
+            "业务CE",
+            "客户边缘路由器",
+            "承载网CE"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_ECR",
+          "canonical_name": "ECR核心路由设备",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "ECR核心路由设备",
+            "ECR",
+            "管理ECR",
+            "业务ECR",
+            "存储ECR",
+            "云核心路由设备"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_TOR_SWITCH",
+          "canonical_name": "ToR交换机",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "ToR交换机",
+            "ToR",
+            "TOR",
+            "业务TOR",
+            "存储TOR",
+            "管理TOR",
+            "硬件管理TOR",
+            "机架顶交换机"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_SDN_GATEWAY",
+          "canonical_name": "SDN网关",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "SDN网关",
+            "云SDN网关",
+            "业务SDN网关",
+            "虚拟网络网关"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_FIREWALL",
+          "canonical_name": "电信云防火墙",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "电信云防火墙",
+            "网管防火墙",
+            "CMNET接入防火墙",
+            "业务防火墙",
+            "电信云边界防火墙",
+            "云防火墙"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_IDS_IPS",
+          "canonical_name": "IDS/IPS设备",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "IDS/IPS设备",
+            "IDS",
+            "IPS",
+            "IDS/IPS",
+            "IPS/IDS",
+            "入侵检测设备",
+            "入侵防御设备"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_TRAFFIC_SPLITTER",
+          "canonical_name": "流量分流器",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "流量分流器",
+            "分流器",
+            "流量分流设备",
+            "流量复制设备",
+            "TAP",
+            "NPB"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_VIM",
+          "canonical_name": "VIM",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "VIM",
+            "虚拟化基础设施管理器",
+            "云资源管理器",
+            "基础设施管理组件"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_SDN_CONTROLLER",
+          "canonical_name": "SDN控制器",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "SDN控制器",
+            "SDNC",
+            "软件定义网络控制器",
+            "云网络控制器"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_VNF",
+          "canonical_name": "VNF",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "VNF",
+            "虚拟网络功能",
+            "虚拟化网元",
+            "虚拟网元",
+            "NFV网元"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_SECURITY_MANAGEMENT_SERVER",
+          "canonical_name": "安全管控前置机服务器",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "安全管控前置机服务器",
+            "安全管控前置机",
+            "安全管理前置机",
+            "管控前置服务器",
+            "安全前置机"
+          ]
+        },
+        {
+          "entity_type_id": "CN_CLOUD_DISTRIBUTED_STORAGE",
+          "canonical_name": "分布式存储",
+          "category_id": "telco_cloud_infrastructure",
+          "aliases": [
+            "分布式存储",
+            "云存储集群",
+            "NFV分布式存储",
+            "存储资源池"
+          ]
+        },
+        {
+          "entity_type_id": "CN_NFV_MANO",
+          "canonical_name": "MANO",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "MANO",
+            "NFV MANO",
+            "NFV管理与编排",
+            "虚拟网元管理编排系统"
+          ]
+        },
+        {
+          "entity_type_id": "CN_NFV_NFVO",
+          "canonical_name": "NFVO",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "NFVO",
+            "NFV编排器",
+            "网络功能虚拟化编排器",
+            "业务编排组件"
+          ]
+        },
+        {
+          "entity_type_id": "CN_NFV_VNFM",
+          "canonical_name": "VNFM",
+          "category_id": "management_and_orchestration",
+          "aliases": [
+            "VNFM",
+            "虚拟网络功能管理器",
+            "VNF管理器",
+            "虚拟网元生命周期管理器"
+          ]
+        }
+      ],
+      "relation_types": [
+        "connects_to",
+        "queries",
+        "controls",
+        "contains",
+        "manages",
+        "registers",
+        "routes_for",
+        "realizes",
+        "provisions",
+        "accesses",
+        "collects_from",
+        "authenticates_via",
+        "stores_data_in",
+        "belongs_to",
+        "resolves_for",
+        "hosts",
+        "orchestrates",
+        "charges_via",
+        "provides_resources_to",
+        "mirrors_to"
+      ]
+    },
+    "new_data_center_network_and_services": {
+      "scene_name": "新型数据中心网络及服务",
+      "training_sample_count": 200,
+      "entities": [
+        {
+          "entity_type_id": "DC_BACKBONE_ACCESS_ROUTER_AR",
+          "canonical_name": "骨干接入路由器AR",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "骨干接入路由器AR",
+            "AR",
+            "AR路由器",
+            "骨干AR",
+            "IP专用承载网接入路由器",
+            "专用承载网接入路由器"
+          ]
+        },
+        {
+          "entity_type_id": "DC_BACKBONE_CORE_ROUTER_BB",
+          "canonical_name": "骨干核心路由器BB",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "骨干核心路由器BB",
+            "BB",
+            "BB路由器",
+            "骨干BB",
+            "云专网骨干核心路由器",
+            "CMNET骨干路由器",
+            "骨干网核心路由器"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DCI_EGRESS_ROUTER",
+          "canonical_name": "DCI出口路由器",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "DCI出口路由器",
+            "DCI路由器",
+            "异地DCI路由器",
+            "数据中心互联出口路由器",
+            "资源池DCI出口"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DATA_CENTER_EDGE_FIREWALL",
+          "canonical_name": "数据中心边界防火墙",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "数据中心边界防火墙",
+            "DCI防火墙",
+            "DCI边界防火墙",
+            "数据中心互联防火墙",
+            "资源池边界防火墙"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DDOS_CLEANING_DEVICE",
+          "canonical_name": "流量清洗设备",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "流量清洗设备",
+            "抗DDoS清洗设备",
+            "DDoS清洗设备",
+            "抗D清洗",
+            "流量清洗中心",
+            "抗D设备"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DDOS_DETECTION_DEVICE",
+          "canonical_name": "流量检测设备",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "流量检测设备",
+            "抗DDoS检测设备",
+            "DDoS检测设备",
+            "抗D检测",
+            "异常流量检测设备",
+            "流量监测设备"
+          ]
+        },
+        {
+          "entity_type_id": "DC_RESOURCE_POOL_EGRESS_ROUTER_CE",
+          "canonical_name": "资源池出口路由器CE",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "资源池出口路由器CE",
+            "CE",
+            "CE路由器",
+            "资源池CE",
+            "出口CE",
+            "云资源池出口路由器"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DCI_INTERCONNECT_ROUTER",
+          "canonical_name": "DCI互联路由器",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "DCI互联路由器",
+            "DCI互联设备",
+            "资源池DCI路由器",
+            "数据中心互联路由器",
+            "DCI VTEP"
+          ]
+        },
+        {
+          "entity_type_id": "DC_SMART_DNS_NODE",
+          "canonical_name": "智能DNS服务节点",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "智能DNS服务节点",
+            "智能DNS",
+            "内网DNS",
+            "内网智能DNS",
+            "DNS服务节点",
+            "智能域名解析节点"
+          ]
+        },
+        {
+          "entity_type_id": "DC_INTERNET_EDGE_FIREWALL",
+          "canonical_name": "互联网边界防火墙",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "互联网边界防火墙",
+            "互联网接入防火墙",
+            "互联网出口防火墙",
+            "公网边界防火墙",
+            "外网防火墙"
+          ]
+        },
+        {
+          "entity_type_id": "DC_CMNET_ACCESS_ROUTER",
+          "canonical_name": "CMNET接入路由器",
+          "category_id": "backbone_and_external_interconnection",
+          "aliases": [
+            "CMNET接入路由器",
+            "CMNET接入",
+            "CMNET互联网接入路由器",
+            "互联网接入路由器",
+            "公网接入路由器"
+          ]
+        },
+        {
+          "entity_type_id": "DC_TRAFFIC_TAP",
+          "canonical_name": "流量分流复制设备",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "流量分流复制设备",
+            "分流器",
+            "网络分流器",
+            "流量复制设备",
+            "TAP",
+            "NPB",
+            "流量镜像设备"
+          ]
+        },
+        {
+          "entity_type_id": "DC_IDS",
+          "canonical_name": "入侵检测设备",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "入侵检测设备",
+            "IDS",
+            "入侵检测系统",
+            "网络入侵检测",
+            "旁路IDS",
+            "攻击检测设备"
+          ]
+        },
+        {
+          "entity_type_id": "DC_WAF",
+          "canonical_name": "WAF应用防火墙",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "WAF应用防火墙",
+            "WAF",
+            "Web应用防火墙",
+            "应用防火墙",
+            "网站应用防火墙",
+            "Web防护设备"
+          ]
+        },
+        {
+          "entity_type_id": "DC_NORTH_SOUTH_AGG_SWITCH",
+          "canonical_name": "南北向汇聚交换机",
+          "category_id": "fabric_and_aggregation_network",
+          "aliases": [
+            "南北向汇聚交换机",
+            "南北向交换机",
+            "南北向汇聚",
+            "资源池汇聚核心",
+            "出口汇聚交换机",
+            "南北流量汇聚交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_EAST_WEST_INTERCONNECT_SWITCH",
+          "canonical_name": "东西向互联交换机",
+          "category_id": "fabric_and_aggregation_network",
+          "aliases": [
+            "东西向互联交换机",
+            "东西向交换机",
+            "东西向互联矩阵",
+            "资源池Spine",
+            "Spine交换机",
+            "跨POD互联交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_MANAGEMENT_EDGE_FIREWALL",
+          "canonical_name": "管理区边界防火墙",
+          "category_id": "management_network",
+          "aliases": [
+            "管理区边界防火墙",
+            "管理域防火墙",
+            "管理网防火墙",
+            "运维边界防火墙",
+            "管理网络边界防火墙"
+          ]
+        },
+        {
+          "entity_type_id": "DC_MANAGEMENT_CORE_SWITCH",
+          "canonical_name": "管理网核心交换机",
+          "category_id": "management_network",
+          "aliases": [
+            "管理网核心交换机",
+            "管理核心交换机",
+            "管理网核心",
+            "网管核心交换机",
+            "管理网络核心交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_MANAGEMENT_AGG_SWITCH",
+          "canonical_name": "管理汇聚交换机",
+          "category_id": "management_network",
+          "aliases": [
+            "管理汇聚交换机",
+            "管理网汇聚交换机",
+            "网管汇聚交换机",
+            "列头管理交换机",
+            "管理汇聚"
+          ]
+        },
+        {
+          "entity_type_id": "DC_PUBLIC_MANAGEMENT_SERVER",
+          "canonical_name": "公共管理服务器",
+          "category_id": "management_network",
+          "aliases": [
+            "公共管理服务器",
+            "管理公共服务节点",
+            "公共服务服务器",
+            "网管公共服务器",
+            "基础管理服务节点"
+          ]
+        },
+        {
+          "entity_type_id": "DC_10GE_MANAGEMENT_ACCESS_SWITCH",
+          "canonical_name": "10GE管理接入交换机",
+          "category_id": "management_network",
+          "aliases": [
+            "10GE管理接入交换机",
+            "10G管理交换机",
+            "万兆管理接入交换机",
+            "10GE网管交换机",
+            "10GE管理交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_IPMI_OOB_SWITCH",
+          "canonical_name": "IPMI带外管理交换机",
+          "category_id": "management_network",
+          "aliases": [
+            "IPMI带外管理交换机",
+            "IPMI接入交换机",
+            "带外管理交换机",
+            "BMC管理交换机",
+            "OOB交换机",
+            "IPMI交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_GE_MANAGEMENT_ACCESS_SWITCH",
+          "canonical_name": "GE管理接入交换机",
+          "category_id": "management_network",
+          "aliases": [
+            "GE管理接入交换机",
+            "GE管理交换机",
+            "千兆管理接入交换机",
+            "网元管理接入交换机",
+            "管理GE交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_POD_MANAGEMENT_SERVER",
+          "canonical_name": "POD内管理服务器",
+          "category_id": "management_network",
+          "aliases": [
+            "POD内管理服务器",
+            "POD管理服务器",
+            "POD管理节点",
+            "本地管理节点",
+            "POD运维服务器"
+          ]
+        },
+        {
+          "entity_type_id": "DC_SDN_GATEWAY",
+          "canonical_name": "SDN网关",
+          "category_id": "pod_network_and_compute",
+          "aliases": [
+            "SDN网关",
+            "POD SDN网关",
+            "SDN出口网关",
+            "VXLAN网关",
+            "Anycast VTEP网关",
+            "POD网关"
+          ]
+        },
+        {
+          "entity_type_id": "DC_CORE_FIREWALL",
+          "canonical_name": "核心防火墙",
+          "category_id": "security_and_traffic_protection",
+          "aliases": [
+            "核心防火墙",
+            "POD核心防火墙",
+            "业务核心防火墙",
+            "租户核心防火墙",
+            "核心区防火墙"
+          ]
+        },
+        {
+          "entity_type_id": "DC_LOAD_BALANCER",
+          "canonical_name": "负载均衡器",
+          "category_id": "pod_network_and_compute",
+          "aliases": [
+            "负载均衡器",
+            "LB",
+            "负载均衡设备",
+            "应用交付控制器",
+            "ADC",
+            "DMZ负载均衡器",
+            "核心负载均衡器"
+          ]
+        },
+        {
+          "entity_type_id": "DC_POD_CORE_SWITCH",
+          "canonical_name": "POD核心交换机",
+          "category_id": "pod_network_and_compute",
+          "aliases": [
+            "POD核心交换机",
+            "POD核心",
+            "核心交换机",
+            "Fabric Spine",
+            "POD Spine交换机",
+            "业务核心交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_SDN_TOR_SWITCH",
+          "canonical_name": "SDN硬件接入交换机(ToR)",
+          "category_id": "pod_network_and_compute",
+          "aliases": [
+            "SDN硬件接入交换机(ToR)",
+            "SDN硬件交换机",
+            "SDN接入交换机",
+            "ToR",
+            "ToR交换机",
+            "Leaf交换机",
+            "POD Leaf"
+          ]
+        },
+        {
+          "entity_type_id": "DC_STORAGE_ACCESS_SWITCH",
+          "canonical_name": "存储接入交换机",
+          "category_id": "storage_and_backup",
+          "aliases": [
+            "存储接入交换机",
+            "存储交换机",
+            "存储接入",
+            "存储网Leaf",
+            "RoCE存储交换机",
+            "POD存储交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_2U_GENERAL_SERVER",
+          "canonical_name": "2U通用服务器",
+          "category_id": "pod_network_and_compute",
+          "aliases": [
+            "2U通用服务器",
+            "2U服务器",
+            "2U机架服务器",
+            "通用计算服务器",
+            "机架式服务器",
+            "计算节点"
+          ]
+        },
+        {
+          "entity_type_id": "DC_HCI_APPLIANCE",
+          "canonical_name": "超融合一体机",
+          "category_id": "pod_network_and_compute",
+          "aliases": [
+            "超融合一体机",
+            "计算存储一体机",
+            "超融合节点",
+            "HCI",
+            "HCI一体机",
+            "超融合设备"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DISTRIBUTED_BLOCK_STORAGE",
+          "canonical_name": "分布式块存储",
+          "category_id": "storage_and_backup",
+          "aliases": [
+            "分布式块存储",
+            "块存储",
+            "分布式块存储集群",
+            "云硬盘后端",
+            "块存储节点",
+            "分布式存储"
+          ]
+        },
+        {
+          "entity_type_id": "DC_STORAGE_AGG_SWITCH",
+          "canonical_name": "存储汇聚交换机",
+          "category_id": "storage_and_backup",
+          "aliases": [
+            "存储汇聚交换机",
+            "存储网汇聚交换机",
+            "存储汇聚",
+            "备份汇聚交换机",
+            "集中存储汇聚交换机"
+          ]
+        },
+        {
+          "entity_type_id": "DC_DISTRIBUTED_FILE_STORAGE",
+          "canonical_name": "分布式文件存储",
+          "category_id": "storage_and_backup",
+          "aliases": [
+            "分布式文件存储",
+            "文件存储",
+            "分布式文件系统",
+            "文件存储系统",
+            "NAS存储",
+            "对象文件存储"
+          ]
+        },
+        {
+          "entity_type_id": "DC_BACKUP_APPLIANCE",
+          "canonical_name": "备份一体机",
+          "category_id": "storage_and_backup",
+          "aliases": [
+            "备份一体机",
+            "备份设备",
+            "集中备份一体机",
+            "备份节点",
+            "数据保护一体机",
+            "DPA备份一体机"
+          ]
+        }
+      ],
+      "relation_types": [
+        "connects_to",
+        "manages",
+        "backs_up_to",
+        "returns_clean_traffic_to",
+        "mirrors_traffic_to",
+        "triggers_cleaning",
+        "redirects_traffic_to",
+        "exports_telemetry_to"
+      ]
+    },
+    "new_metropolitan_network_and_services": {
+      "scene_name": "新型城域网及服务",
+      "training_sample_count": 200,
+      "entities": [
+        {
+          "entity_type_id": "MAN_REGIONAL_NETWORK_CLOUD_CENTER",
+          "canonical_name": "网络云大区中心",
+          "category_id": "regional_center_and_network_domain",
+          "aliases": [
+            "网络云大区中心",
+            "大区中心",
+            "8+X大区中心",
+            "网络云中心",
+            "区域网络云中心"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_NETWORK_CLOUD_RESOURCE_POOL",
+          "canonical_name": "网络云资源池",
+          "category_id": "regional_center_and_network_domain",
+          "aliases": [
+            "网络云资源池",
+            "资源池",
+            "NFV资源池",
+            "核心网资源池",
+            "电信云资源池"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_IP_BEARER_NETWORK",
+          "canonical_name": "IP承载网",
+          "category_id": "regional_center_and_network_domain",
+          "aliases": [
+            "IP承载网",
+            "移动承载网",
+            "IP专用承载网",
+            "承载网络",
+            "IP传送网"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CMNET_NETWORK",
+          "canonical_name": "CMNET网络",
+          "category_id": "regional_center_and_network_domain",
+          "aliases": [
+            "CMNET网络",
+            "CMNET",
+            "CMNET骨干",
+            "中国移动互联网",
+            "移动互联网骨干网",
+            "CMNET省网"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_PUBLIC_INTERNET",
+          "canonical_name": "互联网",
+          "category_id": "regional_center_and_network_domain",
+          "aliases": [
+            "互联网",
+            "Internet",
+            "公网",
+            "公共互联网",
+            "外部互联网"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ENTERPRISE_PRIVATE_NETWORK",
+          "canonical_name": "企业专网",
+          "category_id": "regional_center_and_network_domain",
+          "aliases": [
+            "企业专网",
+            "政企专网",
+            "客户专网",
+            "行业专网",
+            "企业客户网络"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ACCESS_MANAGEMENT_AMF",
+          "canonical_name": "AMF",
+          "category_id": "mobile_core_edge",
+          "aliases": [
+            "AMF",
+            "接入和移动性管理功能",
+            "接入管理网元",
+            "5G接入管理网元",
+            "AMF网元"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ACCESS_MANAGEMENT_MME",
+          "canonical_name": "MME",
+          "category_id": "mobile_core_edge",
+          "aliases": [
+            "MME",
+            "移动性管理实体",
+            "4G接入管理网元",
+            "MME网元"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_DISTRIBUTED_ANCHOR_UPF",
+          "canonical_name": "分布式锚点UPF",
+          "category_id": "mobile_core_edge",
+          "aliases": [
+            "分布式锚点UPF",
+            "UPF",
+            "分布式UPF",
+            "边缘UPF",
+            "下沉UPF",
+            "分布式锚点用户面"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_DISTRIBUTED_ANCHOR_SGW_U",
+          "canonical_name": "分布式锚点S-GW-U",
+          "category_id": "mobile_core_edge",
+          "aliases": [
+            "分布式锚点S-GW-U",
+            "S-GW-U",
+            "SGW-U",
+            "分布式SGW-U",
+            "下沉SGW-U",
+            "4G分布式用户面"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CE_ROUTER",
+          "canonical_name": "CE路由器",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "CE路由器",
+            "CE",
+            "客户边缘路由器",
+            "资源池CE",
+            "承载网CE"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CORE_ROUTER",
+          "canonical_name": "核心路由器",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "核心路由器",
+            "CR",
+            "骨干核心路由器",
+            "城域核心路由器",
+            "高端路由器"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_AGGREGATION_ROUTER",
+          "canonical_name": "汇聚路由器",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "汇聚路由器",
+            "BR",
+            "区域汇聚路由器",
+            "城域汇聚路由器",
+            "汇聚节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_PE_ROUTER",
+          "canonical_name": "PE路由器",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "PE路由器",
+            "PE",
+            "运营商边缘路由器",
+            "Provider Edge",
+            "VPN PE"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_BNG_BRAS",
+          "canonical_name": "BNG/BRAS宽带接入网关",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "BNG/BRAS宽带接入网关",
+            "BNG",
+            "BRAS",
+            "宽带接入网关",
+            "宽带远程接入服务器",
+            "用户接入网关"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CORE_PTN_L3",
+          "canonical_name": "核心PTN（L3）",
+          "category_id": "ptn_transport_network",
+          "aliases": [
+            "核心PTN（L3）",
+            "核心PTN L3",
+            "L3核心PTN",
+            "三层核心PTN",
+            "PTN核心三层节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CORE_PTN_L2_L3",
+          "canonical_name": "核心PTN（L2/L3）",
+          "category_id": "ptn_transport_network",
+          "aliases": [
+            "核心PTN（L2/L3）",
+            "核心PTN L2/L3",
+            "二三层核心PTN",
+            "混合核心PTN",
+            "PTN核心混合节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_AGGREGATION_PTN",
+          "canonical_name": "汇聚PTN",
+          "category_id": "ptn_transport_network",
+          "aliases": [
+            "汇聚PTN",
+            "PTN汇聚节点",
+            "地市PTN汇聚",
+            "PTN汇聚设备"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ACCESS_PTN",
+          "canonical_name": "接入PTN",
+          "category_id": "ptn_transport_network",
+          "aliases": [
+            "接入PTN",
+            "PTN接入节点",
+            "基站PTN",
+            "PTN接入设备",
+            "PTN接入环节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_LANDING_SPN",
+          "canonical_name": "落地SPN",
+          "category_id": "spn_transport_network",
+          "aliases": [
+            "落地SPN",
+            "SPN落地节点",
+            "省干落地SPN",
+            "SPN出口节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CORE_SPN",
+          "canonical_name": "核心SPN",
+          "category_id": "spn_transport_network",
+          "aliases": [
+            "核心SPN",
+            "SPN核心节点",
+            "地市SPN核心",
+            "SPN核心设备"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_AGGREGATION_SPN",
+          "canonical_name": "汇聚SPN",
+          "category_id": "spn_transport_network",
+          "aliases": [
+            "汇聚SPN",
+            "SPN汇聚节点",
+            "地市SPN汇聚",
+            "SPN汇聚设备"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ACCESS_SPN",
+          "canonical_name": "接入SPN",
+          "category_id": "spn_transport_network",
+          "aliases": [
+            "接入SPN",
+            "SPN接入节点",
+            "基站SPN",
+            "SPN接入设备",
+            "SPN接入环节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_IP_RAN_DEVICE",
+          "canonical_name": "IP RAN设备",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "IP RAN设备",
+            "IP RAN",
+            "移动回传设备",
+            "无线承载设备",
+            "基站回传节点"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_OTN_DEVICE",
+          "canonical_name": "OTN设备",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "OTN设备",
+            "OTN",
+            "光传送网设备",
+            "OTN传输设备",
+            "地市OTN"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_WDM_DEVICE",
+          "canonical_name": "WDM波分设备",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "WDM波分设备",
+            "WDM",
+            "波分设备",
+            "波分复用器",
+            "DWDM设备",
+            "光波分设备"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_CORE_SWITCH",
+          "canonical_name": "核心交换机",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "核心交换机",
+            "城域核心交换机",
+            "网络核心交换机",
+            "核心层交换机"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_AGGREGATION_SWITCH",
+          "canonical_name": "汇聚交换机",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "汇聚交换机",
+            "城域汇聚交换机",
+            "汇聚层交换机",
+            "区域汇聚交换机"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ACCESS_SWITCH",
+          "canonical_name": "接入交换机",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "接入交换机",
+            "接入层交换机",
+            "用户接入交换机",
+            "楼道交换机"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_SDN_CONTROLLER",
+          "canonical_name": "SDN控制器",
+          "category_id": "management_and_support",
+          "aliases": [
+            "SDN控制器",
+            "SDNC",
+            "城域网控制器",
+            "软件定义网络控制器",
+            "网络控制器"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_VIRTUAL_ROUTER",
+          "canonical_name": "虚拟路由器vRouter",
+          "category_id": "ip_and_optical_transport",
+          "aliases": [
+            "虚拟路由器vRouter",
+            "vRouter",
+            "虚拟路由器",
+            "软路由",
+            "虚拟化路由网元"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_MPLS_L3VPN_SERVICE",
+          "canonical_name": "MPLS L3VPN业务",
+          "category_id": "metro_network_services",
+          "aliases": [
+            "MPLS L3VPN业务",
+            "MPLS L3VPN",
+            "三层VPN",
+            "L3VPN业务",
+            "MPLS VPN",
+            "企业三层专网"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_SRV6_BEARER_SERVICE",
+          "canonical_name": "SRv6承载业务",
+          "category_id": "metro_network_services",
+          "aliases": [
+            "SRv6承载业务",
+            "SRv6业务",
+            "SRv6承载",
+            "IPv6分段路由业务",
+            "SRv6 Policy业务"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_ENTERPRISE_PRIVATE_LINE_SERVICE",
+          "canonical_name": "企业专线业务",
+          "category_id": "metro_network_services",
+          "aliases": [
+            "企业专线业务",
+            "企业专线",
+            "政企专线",
+            "客户专线",
+            "点到点专线",
+            "专网接入业务"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_INTERNET_ACCESS_SERVICE",
+          "canonical_name": "互联网接入业务",
+          "category_id": "metro_network_services",
+          "aliases": [
+            "互联网接入业务",
+            "互联网接入",
+            "公网接入",
+            "Internet接入",
+            "企业上网业务",
+            "宽带互联网业务"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_BASE_STATION",
+          "canonical_name": "移动通信基站",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "移动通信基站",
+            "基站",
+            "移动基站",
+            "无线基站",
+            "通信基站",
+            "蜂窝基站"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_BBU",
+          "canonical_name": "基带处理单元BBU",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "基带处理单元BBU",
+            "BBU",
+            "基带处理单元",
+            "室内基带处理单元",
+            "基带单元"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_AAU",
+          "canonical_name": "有源天线处理单元AAU",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "有源天线处理单元AAU",
+            "AAU",
+            "有源天线单元",
+            "有源天线处理单元",
+            "5G AAU"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_RRU",
+          "canonical_name": "射频拉远单元RRU",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "射频拉远单元RRU",
+            "RRU",
+            "射频拉远单元",
+            "远端射频单元",
+            "Remote Radio Unit"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_HUB",
+          "canonical_name": "射频汇聚单元HUB",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "射频汇聚单元HUB",
+            "HUB",
+            "射频汇聚单元",
+            "室分HUB",
+            "基站汇聚单元"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_PRRU",
+          "canonical_name": "小型远端射频单元pRRU",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "小型远端射频单元pRRU",
+            "pRRU",
+            "PRRU",
+            "小型远端射频单元",
+            "皮站射频单元",
+            "室分远端单元"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_RADIO_ANTENNA",
+          "canonical_name": "基站天线",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "基站天线",
+            "天线",
+            "无线天线",
+            "室分天线",
+            "蜂窝天线"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_USER_EQUIPMENT",
+          "canonical_name": "用户终端UE",
+          "category_id": "radio_access_network",
+          "aliases": [
+            "用户终端UE",
+            "UE",
+            "用户终端",
+            "用户设备",
+            "移动终端",
+            "手机终端"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_FIXED_ACCESS_OLT",
+          "canonical_name": "光线路终端OLT",
+          "category_id": "fixed_access_network",
+          "aliases": [
+            "光线路终端OLT",
+            "OLT",
+            "光线路终端",
+            "PON局端",
+            "光接入局端设备"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_FIXED_ACCESS_ONU_ONT",
+          "canonical_name": "光网络单元ONU/ONT",
+          "category_id": "fixed_access_network",
+          "aliases": [
+            "光网络单元ONU/ONT",
+            "ONU",
+            "ONT",
+            "ONU/ONT",
+            "光网络单元",
+            "光网络终端",
+            "光猫"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_FIXED_ACCESS_DSLAM",
+          "canonical_name": "DSLAM接入复用器",
+          "category_id": "fixed_access_network",
+          "aliases": [
+            "DSLAM接入复用器",
+            "DSLAM",
+            "接入复用器",
+            "数字用户线接入复用器",
+            "xDSL汇聚设备"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_OMC_EMS",
+          "canonical_name": "OMC/EMS网管系统",
+          "category_id": "management_and_support",
+          "aliases": [
+            "OMC/EMS网管系统",
+            "OMC",
+            "EMS",
+            "OMC/EMS",
+            "网元管理系统",
+            "操作维护中心",
+            "设备管理系统"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_NTP_PTP_TIME_SERVER",
+          "canonical_name": "NTP/PTP时间服务器",
+          "category_id": "management_and_support",
+          "aliases": [
+            "NTP/PTP时间服务器",
+            "NTP服务器",
+            "PTP服务器",
+            "NTP/PTP服务器",
+            "时间同步服务器",
+            "时钟服务器"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_NETWORK_PROBE",
+          "canonical_name": "网络探针",
+          "category_id": "management_and_support",
+          "aliases": [
+            "网络探针",
+            "监测探针",
+            "流量探针",
+            "性能探针",
+            "业务质量探针"
+          ]
+        },
+        {
+          "entity_type_id": "MAN_AAA_SERVER",
+          "canonical_name": "AAA服务器",
+          "category_id": "management_and_support",
+          "aliases": [
+            "AAA服务器",
+            "AAA",
+            "认证授权计费服务器",
+            "Radius服务器",
+            "接入认证服务器"
+          ]
+        }
+      ],
+      "relation_types": [
+        "connects_to",
+        "manages",
+        "hosts",
+        "provisioned_on",
+        "provides_access_to",
+        "synchronizes",
+        "contains",
+        "carried_by",
+        "uses_network",
+        "authenticates",
+        "monitors",
+        "serves",
+        "uses_service"
+      ]
+    }
+  }
+}

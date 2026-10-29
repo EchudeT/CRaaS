@@ -328,6 +328,9 @@ def _host_ip_cidr(base_cidr: str, index: int) -> str:
 
 # ---------------------------------------------------------------- validator
 def validate_topology(scenario: dict) -> dict:
+    if scenario.get("kind") == "logical":
+        from .extraction import validate_logical
+        return validate_logical(scenario)
     issues: list[dict] = []
     nodes = scenario.get("nodes", [])
     links = scenario.get("links", [])

@@ -147,6 +147,7 @@ export default function TemplateEditor() {
           ports: 4,
           role: '新增节点',
           status: 'running',
+          ...(scenario.kind === 'logical' ? { quantity: 1, image: '', flavor: '', cpu: 0, memory: 0, disk: 0, ports: 0, ip: '', status: 'planned' } : {}),
         },
       ],
     })
@@ -158,6 +159,9 @@ export default function TemplateEditor() {
     if (!scenario || !template) return
     setSaving(true)
     try {
+      const checked = await api.validate(scenario)
+      setValidation(checked)
+      if (!checked.passed) { toast('请先修复拓扑结构错误', 'error'); return }
       const t = await api.updateTemplate(template.id, { topology: scenario })
       setTemplate(t)
       toast('模板已保存')
@@ -216,6 +220,8 @@ export default function TemplateEditor() {
             variant="primary"
             size="sm"
             onClick={() => nav(`/orchestrate/${template.id}`)}
+            disabled={scenario.kind === 'logical'}
+            title={scenario.kind === 'logical' ? '逻辑拓扑需先完成资源映射' : undefined}
             icon={<Rocket className="h-3.5 w-3.5" />}
           >
             去部署
@@ -309,6 +315,11 @@ export default function TemplateEditor() {
                 <Field label="节点名称">
                   <Input value={node.name} onChange={(e) => patchNode({ name: e.target.value })} />
                 </Field>
+                {scenario.kind === 'logical' && (
+                  <Field label="实体数量">
+                    <Input type="number" min={1} value={node.quantity ?? 1} onChange={(e) => patchNode({ quantity: Number(e.target.value) })} />
+                  </Field>
+                )}
                 <div className="grid grid-cols-2 gap-2">
                   <Field label="类型">
                     <Select
@@ -414,6 +425,36 @@ export default function TemplateEditor() {
           </div>
         </Card>
       </div>
+
+      {scenario.kind === 'logical' && (
+        <Card className="space-y-3 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">关系编辑 · 修改后保存模板</span>
+            <Button size="sm" disabled={scenario.nodes.length < 2} onClick={() => setScenario({ ...scenario, links: [...scenario.links, {
+              id: `relation_${crypto.randomUUID()}`, source: scenario.nodes[0].id, target: scenario.nodes[1].id,
+              relation_type: 'connects_to', interface: '', protocol: '', label: 'connects_to', directed: false,
+              src_port: '', dst_port: '', cidr: '', bandwidth: '',
+            }] })}>添加关系</Button>
+          </div>
+          {scenario.links.map((link) => {
+            const patchLink = (patch: Partial<typeof link>) => setScenario({ ...scenario, links: scenario.links.map((l) => {
+              if (l.id !== link.id) return l
+              const updated = { ...l, ...patch }
+              return { ...updated, label: [updated.interface, updated.protocol, updated.bandwidth].filter(Boolean).join(' · ') || updated.relation_type }
+            }) })
+            return <div key={link.id} className="grid items-end gap-2 rounded-lg border border-line p-3 lg:grid-cols-3 xl:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_auto]">
+              <Field label="起点"><Select value={link.source} onChange={(source) => patchLink({ source })} options={scenario.nodes.map((n) => ({ value: n.id, label: n.name }))} /></Field>
+              <Field label="终点"><Select value={link.target} onChange={(target) => patchLink({ target })} options={scenario.nodes.map((n) => ({ value: n.id, label: n.name }))} /></Field>
+              <Field label="关系类型"><Input value={link.relation_type || ''} onChange={(e) => patchLink({ relation_type: e.target.value, directed: e.target.value !== 'connects_to' })} /></Field>
+              <Field label="接口 / 链路"><Input value={link.interface || ''} onChange={(e) => patchLink({ interface: e.target.value })} /></Field>
+              <Field label="协议"><Input value={link.protocol || ''} onChange={(e) => patchLink({ protocol: e.target.value })} /></Field>
+              <Field label="链路速率"><Input value={link.bandwidth || ''} placeholder="例如 100Gbps" onChange={(e) => patchLink({ bandwidth: e.target.value })} /></Field>
+              <Button variant="ghost" onClick={() => setScenario({ ...scenario, links: scenario.links.filter((l) => l.id !== link.id) })}>删除</Button>
+            </div>
+          })}
+          <div className="text-xs text-ink-400">逻辑关系不代表已经建立物理网络；未指定的镜像、规格和 IP 保持待配置。</div>
+        </Card>
+      )}
 
       <Modal
         open={addOpen}

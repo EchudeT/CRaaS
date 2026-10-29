@@ -73,6 +73,8 @@ def _template(db: Session, template_id: str) -> Template:
 
 
 def _preview(db: Session, t: Template, business: str, station: str, profile_id: str) -> dict:
+    if (t.topology or {}).get("kind") == "logical":
+        raise HTTPException(422, "这是逻辑拓扑，尚未映射靶场镜像、规格和网络，暂不能部署")
     profile = next((p for p in PROFILES if p["id"] == profile_id), PROFILES[0])
     images = {i.id: i for i in db.execute(select(Image)).scalars().all()}
     workload = []

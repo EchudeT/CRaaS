@@ -19,9 +19,11 @@ LLM_MODE = os.getenv("LLM_MODE", "auto").lower()
 def llm_ready() -> bool:
     if LLM_MODE == "off":
         return False
-    if LLM_MODE == "on":
-        return True
-    return bool(LLM_API_KEY)
+    from .services.model_config import load_config
+    try:
+        return bool(load_config(require_key=False).api_key)
+    except (ValueError, OSError):
+        return False
 
 
 # ---------------------------------------------------------------- 对接驱动
