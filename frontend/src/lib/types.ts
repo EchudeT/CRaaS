@@ -8,6 +8,7 @@ export type NodeType =
   | 'plc'
   | 'ids'
   | 'cloud'
+  | 'transport'
 
 export interface Zone {
   id: string
@@ -29,6 +30,15 @@ export interface TopoNode {
   disk: number
   ports: number
   role: string
+  canonical_name?: string
+  raw_name?: string
+  category?: string
+  interfaces?: unknown[]
+  entity_type_id?: string
+  quantity?: number
+  attributes?: Record<string, unknown>
+  evidence?: string
+  confidence?: number
   status?: string
   x?: number
   y?: number
@@ -42,9 +52,17 @@ export interface TopoLink {
   dst_port: string
   cidr: string
   bandwidth: string
+  relation_type?: string
+  interface?: string
+  protocol?: string
+  label?: string
+  directed?: boolean
+  evidence?: string
 }
 
 export interface Scenario {
+  kind?: 'logical'
+  schema_version?: string
   name: string
   description: string
   industry: string
@@ -58,6 +76,13 @@ export interface Scenario {
     node_count: number
     link_count: number
     host_count: number
+    model?: string
+    scene?: string
+    scene_name?: string
+    secondary_scenes?: string[]
+    scene_confidence?: number
+    unresolved_items?: string[]
+    deployment_ready?: boolean
   }
 }
 
@@ -80,6 +105,21 @@ export interface GenerateResult {
   scenario: Scenario
   validation: Validation
   generator: string
+  model?: string
+  repair_attempted?: boolean
+  extraction?: Record<string, unknown>
+  raw_analysis?: string
+}
+
+export interface GenerationJob {
+  id: string
+  status: 'queued' | 'running' | 'succeeded' | 'failed'
+  stage: string
+  characters: number
+  created_at: number
+  model: string
+  result: GenerateResult | null
+  error: string
 }
 
 export interface Template {

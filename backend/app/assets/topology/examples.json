@@ -1,0 +1,1185 @@
+{
+  "source": "training_sets_only; corrected link labels and grounded example attributes",
+  "examples": [
+    {
+      "sample_id": "CNS-TR-001",
+      "scene_id": "communication_network_and_services",
+      "keywords": [
+        "接入和移动性管理功能",
+        "下一代无线接入网",
+        "5G认证网元",
+        "SMF网元",
+        "5G基站",
+        "NRF"
+      ],
+      "input": "创建一个通信网络及服务示例环境。\n部署4个5G基站（deployment_location为A省B市电信云资源池，quantity为4，unit为台，mode为5G NSA，interface为N2/N3，deployment_mode为双站冗余）。\n部署1个下一代无线接入网（deployment_location为A省B市电信云资源池，network_type为5G无线接入网，generation为5G，bandwidth为100Gbps，latency为不高于10ms，address_domain为IPv4/IPv6双栈，quantity为1，unit为个）。\n部署4个接入和移动性管理功能（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为5G SA，plane为控制面，interface为N1/N2/N8/N11，protocol为HTTP/2 SBI/NGAP，capacity为20万并发会话，redundancy为N+1集群）。\n部署4个SMF网元（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为5G SA，plane为控制面，interface为N4/N7/N10/N11，protocol为HTTP/2 SBI/PFCP，capacity为20万并发会话，redundancy为N+1集群）。\n部署3个5G认证网元（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为5G SA，plane为控制面，interface为N12/N13，protocol为HTTP/2 SBI，capacity为50万注册用户，redundancy为N+1集群）。\n部署3个NRF（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为5G SA，plane为控制面，interface为Nnrf，protocol为HTTP/2 SBI，capacity为20万并发会话，redundancy为N+1集群）。\n5G基站通过NG接入链路与下一代无线接入网建立belongs_to关系。\n下一代无线接入网通过N2接口与接入和移动性管理功能建立connects_to关系。\n接入和移动性管理功能通过N12接口与5G认证网元建立authenticates_via关系。\n接入和移动性管理功能通过N11服务化接口与SMF网元建立connects_to关系。\nNRF通过Nnrf注册发现接口与接入和移动性管理功能建立registers关系。\nNRF通过Nnrf注册发现接口与SMF网元建立registers关系。",
+      "output": {
+        "primary_scene": "communication_network_and_services",
+        "primary_scene_name": "通信网络及服务",
+        "secondary_scenes": [],
+        "scene_confidence": 1.0,
+        "entities": [
+          {
+            "instance_id": "cn_gnb",
+            "entity_type_id": "CN_GNB",
+            "raw_name": "5G基站",
+            "canonical_name": "5G基站gNB",
+            "category": "access_and_network_domain",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 4,
+              "unit": "台",
+              "mode": "5G NSA",
+              "interface": "N2/N3",
+              "deployment_mode": "双站冗余"
+            },
+            "evidence": "部署4个5G基站（deployment_location为A省B市电信云资源池，quantity为4，unit为台，mode为5G NSA，interface为N2/N3，deployment_mode为双站冗余）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_ng_ran",
+            "entity_type_id": "CN_NG_RAN",
+            "raw_name": "下一代无线接入网",
+            "canonical_name": "NG-RAN",
+            "category": "access_and_network_domain",
+            "quantity": 1,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "network_type": "5G无线接入网",
+              "generation": "5G",
+              "bandwidth": "100Gbps",
+              "latency": "不高于10ms",
+              "address_domain": "IPv4/IPv6双栈",
+              "quantity": 1,
+              "unit": "个"
+            },
+            "evidence": "部署1个下一代无线接入网（deployment_location为A省B市电信云资源池，network_type为5G无线接入网，generation为5G，bandwidth为100Gbps，latency为不高于10ms，address_domain为IPv4/IPv6双栈，quantity为1，unit为个）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_5gc_amf",
+            "entity_type_id": "CN_5GC_AMF",
+            "raw_name": "接入和移动性管理功能",
+            "canonical_name": "AMF",
+            "category": "five_g_core",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 4,
+              "unit": "个实例",
+              "generation": "5G SA",
+              "plane": "控制面",
+              "interface": "N1/N2/N8/N11",
+              "protocol": "HTTP/2 SBI/NGAP",
+              "capacity": "20万并发会话",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署4个接入和移动性管理功能（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为5G SA，plane为控制面，interface为N1/N2/N8/N11，protocol为HTTP/2 SBI/NGAP，capacity为20万并发会话，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_5gc_smf",
+            "entity_type_id": "CN_5GC_SMF",
+            "raw_name": "SMF网元",
+            "canonical_name": "SMF",
+            "category": "five_g_core",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 4,
+              "unit": "个实例",
+              "generation": "5G SA",
+              "plane": "控制面",
+              "interface": "N4/N7/N10/N11",
+              "protocol": "HTTP/2 SBI/PFCP",
+              "capacity": "20万并发会话",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署4个SMF网元（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为5G SA，plane为控制面，interface为N4/N7/N10/N11，protocol为HTTP/2 SBI/PFCP，capacity为20万并发会话，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_5gc_ausf",
+            "entity_type_id": "CN_5GC_AUSF",
+            "raw_name": "5G认证网元",
+            "canonical_name": "AUSF",
+            "category": "five_g_core",
+            "quantity": 3,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 3,
+              "unit": "个实例",
+              "generation": "5G SA",
+              "plane": "控制面",
+              "interface": "N12/N13",
+              "protocol": "HTTP/2 SBI",
+              "capacity": "50万注册用户",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署3个5G认证网元（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为5G SA，plane为控制面，interface为N12/N13，protocol为HTTP/2 SBI，capacity为50万注册用户，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_5gc_nrf",
+            "entity_type_id": "CN_5GC_NRF",
+            "raw_name": "NRF",
+            "canonical_name": "NRF",
+            "category": "five_g_core",
+            "quantity": 3,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 3,
+              "unit": "个实例",
+              "generation": "5G SA",
+              "plane": "控制面",
+              "interface": "Nnrf",
+              "protocol": "HTTP/2 SBI",
+              "capacity": "20万并发会话",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署3个NRF（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为5G SA，plane为控制面，interface为Nnrf，protocol为HTTP/2 SBI，capacity为20万并发会话，redundancy为N+1集群）。",
+            "confidence": 1.0
+          }
+        ],
+        "relations": [
+          {
+            "source": "cn_gnb",
+            "target": "cn_ng_ran",
+            "relation_type": "belongs_to",
+            "interface": "NG接入链路",
+            "protocol": "",
+            "evidence": "5G基站通过NG接入链路与下一代无线接入网建立belongs_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_ng_ran",
+            "target": "cn_5gc_amf",
+            "relation_type": "connects_to",
+            "interface": "N2接口",
+            "protocol": "",
+            "evidence": "下一代无线接入网通过N2接口与接入和移动性管理功能建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_5gc_amf",
+            "target": "cn_5gc_ausf",
+            "relation_type": "authenticates_via",
+            "interface": "N12接口",
+            "protocol": "",
+            "evidence": "接入和移动性管理功能通过N12接口与5G认证网元建立authenticates_via关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_5gc_amf",
+            "target": "cn_5gc_smf",
+            "relation_type": "connects_to",
+            "interface": "N11服务化接口",
+            "protocol": "",
+            "evidence": "接入和移动性管理功能通过N11服务化接口与SMF网元建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_5gc_nrf",
+            "target": "cn_5gc_amf",
+            "relation_type": "registers",
+            "interface": "Nnrf注册发现接口",
+            "protocol": "",
+            "evidence": "NRF通过Nnrf注册发现接口与接入和移动性管理功能建立registers关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_5gc_nrf",
+            "target": "cn_5gc_smf",
+            "relation_type": "registers",
+            "interface": "Nnrf注册发现接口",
+            "protocol": "",
+            "evidence": "NRF通过Nnrf注册发现接口与SMF网元建立registers关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          }
+        ],
+        "unresolved_items": []
+      }
+    },
+    {
+      "sample_id": "CNS-TR-101",
+      "scene_id": "communication_network_and_services",
+      "keywords": [
+        "代理呼叫会话控制功能",
+        "服务呼叫会话控制功能",
+        "I-CSCF网元",
+        "BGCF网元",
+        "MRFC网元",
+        "PCF网元"
+      ],
+      "input": "创建一个通信网络及服务示例环境。\n部署4个PCF网元（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为5G SA，plane为控制面，interface为N5/N7/N15/N36，protocol为HTTP/2 SBI，capacity为50万注册用户，redundancy为N+1集群）。\n部署2个代理呼叫会话控制功能（deployment_location为A省B市电信云资源池，quantity为2，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Gm/Mw/Rx，protocol为SIP/Diameter，capacity为5万事务/秒，redundancy为N+1集群）。\n部署2个I-CSCF网元（deployment_location为A省B市电信云资源池，quantity为2，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Mw/Cx，protocol为SIP/Diameter，capacity为50万注册用户，redundancy为N+1集群）。\n部署3个服务呼叫会话控制功能（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Mw/Cx/Mr，protocol为SIP/Diameter，capacity为50万注册用户，redundancy为N+1集群）。\n部署4个MRFC网元（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为IMS/VoLTE/VoNR，plane为媒体控制面，interface为Mr/Mp，protocol为SIP/H.248，capacity为5万事务/秒，redundancy为N+1集群）。\n部署3个BGCF网元（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Mi，protocol为SIP，capacity为5万事务/秒，redundancy为N+1集群）。\nI-CSCF网元通过Mw/SIP接口与服务呼叫会话控制功能建立connects_to关系。\n代理呼叫会话控制功能通过Mw/SIP接口与I-CSCF网元建立connects_to关系。\n服务呼叫会话控制功能通过Mr/SIP接口与MRFC网元建立controls关系。\n服务呼叫会话控制功能通过Mi/SIP路由与BGCF网元建立connects_to关系。\n代理呼叫会话控制功能通过N5策略接口与PCF网元建立queries关系。",
+      "output": {
+        "primary_scene": "communication_network_and_services",
+        "primary_scene_name": "通信网络及服务",
+        "secondary_scenes": [],
+        "scene_confidence": 1.0,
+        "entities": [
+          {
+            "instance_id": "cn_5gc_pcf",
+            "entity_type_id": "CN_5GC_PCF",
+            "raw_name": "PCF网元",
+            "canonical_name": "PCF",
+            "category": "five_g_core",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 4,
+              "unit": "个实例",
+              "generation": "5G SA",
+              "plane": "控制面",
+              "interface": "N5/N7/N15/N36",
+              "protocol": "HTTP/2 SBI",
+              "capacity": "50万注册用户",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署4个PCF网元（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为5G SA，plane为控制面，interface为N5/N7/N15/N36，protocol为HTTP/2 SBI，capacity为50万注册用户，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_ims_p_cscf",
+            "entity_type_id": "CN_IMS_P_CSCF",
+            "raw_name": "代理呼叫会话控制功能",
+            "canonical_name": "P-CSCF",
+            "category": "ims_and_voice_service",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 2,
+              "unit": "个实例",
+              "generation": "IMS/VoLTE/VoNR",
+              "plane": "IMS控制面",
+              "interface": "Gm/Mw/Rx",
+              "protocol": "SIP/Diameter",
+              "capacity": "5万事务/秒",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署2个代理呼叫会话控制功能（deployment_location为A省B市电信云资源池，quantity为2，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Gm/Mw/Rx，protocol为SIP/Diameter，capacity为5万事务/秒，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_ims_i_cscf",
+            "entity_type_id": "CN_IMS_I_CSCF",
+            "raw_name": "I-CSCF网元",
+            "canonical_name": "I-CSCF",
+            "category": "ims_and_voice_service",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 2,
+              "unit": "个实例",
+              "generation": "IMS/VoLTE/VoNR",
+              "plane": "IMS控制面",
+              "interface": "Mw/Cx",
+              "protocol": "SIP/Diameter",
+              "capacity": "50万注册用户",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署2个I-CSCF网元（deployment_location为A省B市电信云资源池，quantity为2，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Mw/Cx，protocol为SIP/Diameter，capacity为50万注册用户，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_ims_s_cscf",
+            "entity_type_id": "CN_IMS_S_CSCF",
+            "raw_name": "服务呼叫会话控制功能",
+            "canonical_name": "S-CSCF",
+            "category": "ims_and_voice_service",
+            "quantity": 3,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 3,
+              "unit": "个实例",
+              "generation": "IMS/VoLTE/VoNR",
+              "plane": "IMS控制面",
+              "interface": "Mw/Cx/Mr",
+              "protocol": "SIP/Diameter",
+              "capacity": "50万注册用户",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署3个服务呼叫会话控制功能（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Mw/Cx/Mr，protocol为SIP/Diameter，capacity为50万注册用户，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_ims_mrfc",
+            "entity_type_id": "CN_IMS_MRFC",
+            "raw_name": "MRFC网元",
+            "canonical_name": "MRFC",
+            "category": "ims_and_voice_service",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 4,
+              "unit": "个实例",
+              "generation": "IMS/VoLTE/VoNR",
+              "plane": "媒体控制面",
+              "interface": "Mr/Mp",
+              "protocol": "SIP/H.248",
+              "capacity": "5万事务/秒",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署4个MRFC网元（deployment_location为A省B市电信云资源池，quantity为4，unit为个实例，generation为IMS/VoLTE/VoNR，plane为媒体控制面，interface为Mr/Mp，protocol为SIP/H.248，capacity为5万事务/秒，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "cn_ims_bgcf",
+            "entity_type_id": "CN_IMS_BGCF",
+            "raw_name": "BGCF网元",
+            "canonical_name": "BGCF",
+            "category": "ims_and_voice_service",
+            "quantity": 3,
+            "attributes": {
+              "deployment_location": "A省B市电信云资源池",
+              "quantity": 3,
+              "unit": "个实例",
+              "generation": "IMS/VoLTE/VoNR",
+              "plane": "IMS控制面",
+              "interface": "Mi",
+              "protocol": "SIP",
+              "capacity": "5万事务/秒",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署3个BGCF网元（deployment_location为A省B市电信云资源池，quantity为3，unit为个实例，generation为IMS/VoLTE/VoNR，plane为IMS控制面，interface为Mi，protocol为SIP，capacity为5万事务/秒，redundancy为N+1集群）。",
+            "confidence": 1.0
+          }
+        ],
+        "relations": [
+          {
+            "source": "cn_ims_i_cscf",
+            "target": "cn_ims_s_cscf",
+            "relation_type": "connects_to",
+            "interface": "Mw/SIP接口",
+            "protocol": "",
+            "evidence": "I-CSCF网元通过Mw/SIP接口与服务呼叫会话控制功能建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_ims_p_cscf",
+            "target": "cn_ims_i_cscf",
+            "relation_type": "connects_to",
+            "interface": "Mw/SIP接口",
+            "protocol": "",
+            "evidence": "代理呼叫会话控制功能通过Mw/SIP接口与I-CSCF网元建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_ims_s_cscf",
+            "target": "cn_ims_mrfc",
+            "relation_type": "controls",
+            "interface": "Mr/SIP接口",
+            "protocol": "",
+            "evidence": "服务呼叫会话控制功能通过Mr/SIP接口与MRFC网元建立controls关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_ims_s_cscf",
+            "target": "cn_ims_bgcf",
+            "relation_type": "connects_to",
+            "interface": "Mi/SIP路由",
+            "protocol": "",
+            "evidence": "服务呼叫会话控制功能通过Mi/SIP路由与BGCF网元建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "cn_ims_p_cscf",
+            "target": "cn_5gc_pcf",
+            "relation_type": "queries",
+            "interface": "N5策略接口",
+            "protocol": "",
+            "evidence": "代理呼叫会话控制功能通过N5策略接口与PCF网元建立queries关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          }
+        ],
+        "unresolved_items": []
+      }
+    },
+    {
+      "sample_id": "NDC-TR-001",
+      "scene_id": "new_data_center_network_and_services",
+      "keywords": [
+        "10GE网管交换机",
+        "千兆管理接入交换机",
+        "资源池Spine",
+        "ToR交换机",
+        "2U服务器",
+        "HCI"
+      ],
+      "input": "创建一个新型数据中心网络及服务示例环境。\n部署4个资源池Spine（quantity为4，unit为台，deployment_location为A省C市第二资源池机房，model为华为CE8850-64CQ-EI，protocol为VXLAN，management_ip为172.17.90.26，business_network为10.21.252.0/28）。\n部署1个10GE网管交换机（quantity为1，unit为台，deployment_location为A省C市第二资源池机房，model为新华三S5560X-54C-EI，protocol为堆叠，management_ip为172.17.90.31，business_network为172.17.90.0/24）。\n部署2个千兆管理接入交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为迈普NSS5820-54XQFP，protocol为SSH，management_ip为172.17.90.33，business_network为172.17.90.0/24）。\n部署2个ToR交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为锐捷RG-S6510-48VS8CQ，protocol为VXLAN，management_ip为172.17.90.36，business_network为10.21.10.0/24）。\n部署12个2U服务器（quantity为12，unit为台，deployment_location为A省C市第二资源池机房，model为曙光I620-G30，protocol为IPMI，management_ip为172.17.90.37，business_network为10.21.10.0/24）。\n部署2个HCI（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为华为FusionCube 2000，protocol为Redfish，management_ip为172.17.90.38，business_network为10.21.10.0/24）。\nToR交换机通过25GE双网卡链路与HCI建立connects_to关系。\n10GE网管交换机通过10GE管理通道与HCI建立manages关系。\n千兆管理接入交换机通过GE管理通道与ToR交换机建立manages关系。\nToR交换机通过25GE双网卡链路与2U服务器建立connects_to关系。\n资源池Spine通过25GE跨POD链路与ToR交换机建立connects_to关系。",
+      "output": {
+        "primary_scene": "new_data_center_network_and_services",
+        "primary_scene_name": "新型数据中心网络及服务",
+        "secondary_scenes": [],
+        "scene_confidence": 1.0,
+        "entities": [
+          {
+            "instance_id": "dc_east_west_interconnect_switch",
+            "entity_type_id": "DC_EAST_WEST_INTERCONNECT_SWITCH",
+            "raw_name": "资源池Spine",
+            "canonical_name": "东西向互联交换机",
+            "category": "fabric_and_aggregation_network",
+            "quantity": 4,
+            "attributes": {
+              "quantity": 4,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "华为CE8850-64CQ-EI",
+              "protocol": "VXLAN",
+              "management_ip": "172.17.90.26",
+              "business_network": "10.21.252.0/28"
+            },
+            "evidence": "部署4个资源池Spine（quantity为4，unit为台，deployment_location为A省C市第二资源池机房，model为华为CE8850-64CQ-EI，protocol为VXLAN，management_ip为172.17.90.26，business_network为10.21.252.0/28）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_10ge_management_access_switch",
+            "entity_type_id": "DC_10GE_MANAGEMENT_ACCESS_SWITCH",
+            "raw_name": "10GE网管交换机",
+            "canonical_name": "10GE管理接入交换机",
+            "category": "management_network",
+            "quantity": 1,
+            "attributes": {
+              "quantity": 1,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "新华三S5560X-54C-EI",
+              "protocol": "堆叠",
+              "management_ip": "172.17.90.31",
+              "business_network": "172.17.90.0/24"
+            },
+            "evidence": "部署1个10GE网管交换机（quantity为1，unit为台，deployment_location为A省C市第二资源池机房，model为新华三S5560X-54C-EI，protocol为堆叠，management_ip为172.17.90.31，business_network为172.17.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_ge_management_access_switch",
+            "entity_type_id": "DC_GE_MANAGEMENT_ACCESS_SWITCH",
+            "raw_name": "千兆管理接入交换机",
+            "canonical_name": "GE管理接入交换机",
+            "category": "management_network",
+            "quantity": 2,
+            "attributes": {
+              "quantity": 2,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "迈普NSS5820-54XQFP",
+              "protocol": "SSH",
+              "management_ip": "172.17.90.33",
+              "business_network": "172.17.90.0/24"
+            },
+            "evidence": "部署2个千兆管理接入交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为迈普NSS5820-54XQFP，protocol为SSH，management_ip为172.17.90.33，business_network为172.17.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_sdn_tor_switch",
+            "entity_type_id": "DC_SDN_TOR_SWITCH",
+            "raw_name": "ToR交换机",
+            "canonical_name": "SDN硬件接入交换机(ToR)",
+            "category": "pod_network_and_compute",
+            "quantity": 2,
+            "attributes": {
+              "quantity": 2,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "锐捷RG-S6510-48VS8CQ",
+              "protocol": "VXLAN",
+              "management_ip": "172.17.90.36",
+              "business_network": "10.21.10.0/24"
+            },
+            "evidence": "部署2个ToR交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为锐捷RG-S6510-48VS8CQ，protocol为VXLAN，management_ip为172.17.90.36，business_network为10.21.10.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_2u_general_server",
+            "entity_type_id": "DC_2U_GENERAL_SERVER",
+            "raw_name": "2U服务器",
+            "canonical_name": "2U通用服务器",
+            "category": "pod_network_and_compute",
+            "quantity": 12,
+            "attributes": {
+              "quantity": 12,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "曙光I620-G30",
+              "protocol": "IPMI",
+              "management_ip": "172.17.90.37",
+              "business_network": "10.21.10.0/24"
+            },
+            "evidence": "部署12个2U服务器（quantity为12，unit为台，deployment_location为A省C市第二资源池机房，model为曙光I620-G30，protocol为IPMI，management_ip为172.17.90.37，business_network为10.21.10.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_hci_appliance",
+            "entity_type_id": "DC_HCI_APPLIANCE",
+            "raw_name": "HCI",
+            "canonical_name": "超融合一体机",
+            "category": "pod_network_and_compute",
+            "quantity": 2,
+            "attributes": {
+              "quantity": 2,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "华为FusionCube 2000",
+              "protocol": "Redfish",
+              "management_ip": "172.17.90.38",
+              "business_network": "10.21.10.0/24"
+            },
+            "evidence": "部署2个HCI（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为华为FusionCube 2000，protocol为Redfish，management_ip为172.17.90.38，business_network为10.21.10.0/24）。",
+            "confidence": 1.0
+          }
+        ],
+        "relations": [
+          {
+            "source": "dc_sdn_tor_switch",
+            "target": "dc_hci_appliance",
+            "relation_type": "connects_to",
+            "interface": "25GE双网卡链路",
+            "protocol": "",
+            "evidence": "ToR交换机通过25GE双网卡链路与HCI建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "25Gbps"
+          },
+          {
+            "source": "dc_10ge_management_access_switch",
+            "target": "dc_hci_appliance",
+            "relation_type": "manages",
+            "interface": "10GE管理通道",
+            "protocol": "",
+            "evidence": "10GE网管交换机通过10GE管理通道与HCI建立manages关系。",
+            "confidence": 1.0,
+            "bandwidth": "10Gbps"
+          },
+          {
+            "source": "dc_ge_management_access_switch",
+            "target": "dc_sdn_tor_switch",
+            "relation_type": "manages",
+            "interface": "GE管理通道",
+            "protocol": "",
+            "evidence": "千兆管理接入交换机通过GE管理通道与ToR交换机建立manages关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "dc_sdn_tor_switch",
+            "target": "dc_2u_general_server",
+            "relation_type": "connects_to",
+            "interface": "25GE双网卡链路",
+            "protocol": "",
+            "evidence": "ToR交换机通过25GE双网卡链路与2U服务器建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "25Gbps"
+          },
+          {
+            "source": "dc_east_west_interconnect_switch",
+            "target": "dc_sdn_tor_switch",
+            "relation_type": "connects_to",
+            "interface": "25GE跨POD链路",
+            "protocol": "",
+            "evidence": "资源池Spine通过25GE跨POD链路与ToR交换机建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "25Gbps"
+          }
+        ],
+        "unresolved_items": []
+      }
+    },
+    {
+      "sample_id": "NDC-TR-101",
+      "scene_id": "new_data_center_network_and_services",
+      "keywords": [
+        "10GE管理交换机",
+        "网元管理接入交换机",
+        "BMC管理交换机",
+        "管理网核心交换机",
+        "网管汇聚交换机",
+        "2U服务器"
+      ],
+      "input": "创建一个新型数据中心网络及服务示例环境。\n部署2个管理网核心交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为华为CE8850E-32CQ-EI，protocol为堆叠，management_ip为172.21.90.27，business_network为172.21.90.0/24）。\n部署16个网管汇聚交换机（quantity为16，unit为台，deployment_location为A省C市第二资源池机房，model为锐捷RG-S6510-48VS8CQ，protocol为SSH，management_ip为172.21.90.28，business_network为172.21.90.0/24）。\n部署2个10GE管理交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为新华三S5560X-54C-EI，protocol为SSH，management_ip为172.21.90.29，business_network为172.21.90.0/24）。\n部署2个BMC管理交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为华为CE5855E-48T4S2Q，protocol为LLDP，management_ip为172.21.90.30，business_network为172.21.90.0/24）。\n部署1个网元管理接入交换机（quantity为1，unit为台，deployment_location为A省C市第二资源池机房，model为迈普NSS5820-54XQFP，protocol为802.1X，management_ip为172.21.90.31，business_network为172.21.90.0/24）。\n部署12个2U服务器（quantity为12，unit为台，deployment_location为A省C市第二资源池机房，model为曙光I620-G30，protocol为SSH，management_ip为172.21.90.35，business_network为10.21.10.0/24）。\nBMC管理交换机通过BMC/IPMI带外通道与2U服务器建立manages关系。\n网管汇聚交换机通过GE带外管理链路与BMC管理交换机建立connects_to关系。\n管理网核心交换机通过10GE双上联与网管汇聚交换机建立connects_to关系。\n网管汇聚交换机通过GE管理链路与网元管理接入交换机建立connects_to关系。\n网管汇聚交换机通过10GE管理链路与10GE管理交换机建立connects_to关系。",
+      "output": {
+        "primary_scene": "new_data_center_network_and_services",
+        "primary_scene_name": "新型数据中心网络及服务",
+        "secondary_scenes": [],
+        "scene_confidence": 1.0,
+        "entities": [
+          {
+            "instance_id": "dc_management_core_switch",
+            "entity_type_id": "DC_MANAGEMENT_CORE_SWITCH",
+            "raw_name": "管理网核心交换机",
+            "canonical_name": "管理网核心交换机",
+            "category": "management_network",
+            "quantity": 2,
+            "attributes": {
+              "quantity": 2,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "华为CE8850E-32CQ-EI",
+              "protocol": "堆叠",
+              "management_ip": "172.21.90.27",
+              "business_network": "172.21.90.0/24"
+            },
+            "evidence": "部署2个管理网核心交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为华为CE8850E-32CQ-EI，protocol为堆叠，management_ip为172.21.90.27，business_network为172.21.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_management_agg_switch",
+            "entity_type_id": "DC_MANAGEMENT_AGG_SWITCH",
+            "raw_name": "网管汇聚交换机",
+            "canonical_name": "管理汇聚交换机",
+            "category": "management_network",
+            "quantity": 16,
+            "attributes": {
+              "quantity": 16,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "锐捷RG-S6510-48VS8CQ",
+              "protocol": "SSH",
+              "management_ip": "172.21.90.28",
+              "business_network": "172.21.90.0/24"
+            },
+            "evidence": "部署16个网管汇聚交换机（quantity为16，unit为台，deployment_location为A省C市第二资源池机房，model为锐捷RG-S6510-48VS8CQ，protocol为SSH，management_ip为172.21.90.28，business_network为172.21.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_10ge_management_access_switch",
+            "entity_type_id": "DC_10GE_MANAGEMENT_ACCESS_SWITCH",
+            "raw_name": "10GE管理交换机",
+            "canonical_name": "10GE管理接入交换机",
+            "category": "management_network",
+            "quantity": 2,
+            "attributes": {
+              "quantity": 2,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "新华三S5560X-54C-EI",
+              "protocol": "SSH",
+              "management_ip": "172.21.90.29",
+              "business_network": "172.21.90.0/24"
+            },
+            "evidence": "部署2个10GE管理交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为新华三S5560X-54C-EI，protocol为SSH，management_ip为172.21.90.29，business_network为172.21.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_ipmi_oob_switch",
+            "entity_type_id": "DC_IPMI_OOB_SWITCH",
+            "raw_name": "BMC管理交换机",
+            "canonical_name": "IPMI带外管理交换机",
+            "category": "management_network",
+            "quantity": 2,
+            "attributes": {
+              "quantity": 2,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "华为CE5855E-48T4S2Q",
+              "protocol": "LLDP",
+              "management_ip": "172.21.90.30",
+              "business_network": "172.21.90.0/24"
+            },
+            "evidence": "部署2个BMC管理交换机（quantity为2，unit为台，deployment_location为A省C市第二资源池机房，model为华为CE5855E-48T4S2Q，protocol为LLDP，management_ip为172.21.90.30，business_network为172.21.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_ge_management_access_switch",
+            "entity_type_id": "DC_GE_MANAGEMENT_ACCESS_SWITCH",
+            "raw_name": "网元管理接入交换机",
+            "canonical_name": "GE管理接入交换机",
+            "category": "management_network",
+            "quantity": 1,
+            "attributes": {
+              "quantity": 1,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "迈普NSS5820-54XQFP",
+              "protocol": "802.1X",
+              "management_ip": "172.21.90.31",
+              "business_network": "172.21.90.0/24"
+            },
+            "evidence": "部署1个网元管理接入交换机（quantity为1，unit为台，deployment_location为A省C市第二资源池机房，model为迈普NSS5820-54XQFP，protocol为802.1X，management_ip为172.21.90.31，business_network为172.21.90.0/24）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "dc_2u_general_server",
+            "entity_type_id": "DC_2U_GENERAL_SERVER",
+            "raw_name": "2U服务器",
+            "canonical_name": "2U通用服务器",
+            "category": "pod_network_and_compute",
+            "quantity": 12,
+            "attributes": {
+              "quantity": 12,
+              "unit": "台",
+              "deployment_location": "A省C市第二资源池机房",
+              "model": "曙光I620-G30",
+              "protocol": "SSH",
+              "management_ip": "172.21.90.35",
+              "business_network": "10.21.10.0/24"
+            },
+            "evidence": "部署12个2U服务器（quantity为12，unit为台，deployment_location为A省C市第二资源池机房，model为曙光I620-G30，protocol为SSH，management_ip为172.21.90.35，business_network为10.21.10.0/24）。",
+            "confidence": 1.0
+          }
+        ],
+        "relations": [
+          {
+            "source": "dc_ipmi_oob_switch",
+            "target": "dc_2u_general_server",
+            "relation_type": "manages",
+            "interface": "BMC/IPMI带外通道",
+            "protocol": "",
+            "evidence": "BMC管理交换机通过BMC/IPMI带外通道与2U服务器建立manages关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "dc_management_agg_switch",
+            "target": "dc_ipmi_oob_switch",
+            "relation_type": "connects_to",
+            "interface": "GE带外管理链路",
+            "protocol": "",
+            "evidence": "网管汇聚交换机通过GE带外管理链路与BMC管理交换机建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "dc_management_core_switch",
+            "target": "dc_management_agg_switch",
+            "relation_type": "connects_to",
+            "interface": "10GE双上联",
+            "protocol": "",
+            "evidence": "管理网核心交换机通过10GE双上联与网管汇聚交换机建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "10Gbps"
+          },
+          {
+            "source": "dc_management_agg_switch",
+            "target": "dc_ge_management_access_switch",
+            "relation_type": "connects_to",
+            "interface": "GE管理链路",
+            "protocol": "",
+            "evidence": "网管汇聚交换机通过GE管理链路与网元管理接入交换机建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "dc_management_agg_switch",
+            "target": "dc_10ge_management_access_switch",
+            "relation_type": "connects_to",
+            "interface": "10GE管理链路",
+            "protocol": "",
+            "evidence": "网管汇聚交换机通过10GE管理链路与10GE管理交换机建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "10Gbps"
+          }
+        ],
+        "unresolved_items": []
+      }
+    },
+    {
+      "sample_id": "MAN-TR-001",
+      "scene_id": "new_metropolitan_network_and_services",
+      "keywords": [
+        "远端射频单元",
+        "pRRU",
+        "基带单元",
+        "手机终端",
+        "无线天线",
+        "AAU"
+      ],
+      "input": "创建一个新型城域网及服务示例环境。\n部署6个基带单元（deployment_location为A省C市新区，region为A省C市，quantity为6，unit为台，network_mode为5G SA，frequency_band为3.5GHz n78，bandwidth为100MHz，interface为eCPRI）。\n部署4个AAU（deployment_location为A省C市新区，region为A省C市，quantity为4，unit为台，network_mode为5G SA，frequency_band为3.5GHz n78，bandwidth为100MHz，interface为eCPRI）。\n部署2个远端射频单元（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_mode为4G/5G共站，frequency_band为1.8GHz，bandwidth为160MHz，interface为CPRI）。\n部署4个pRRU（deployment_location为A省C市新区，region为A省C市，quantity为4，unit为台，network_mode为5G室内覆盖，frequency_band为3.5GHz n78，bandwidth为160MHz，interface为eCPRI级联接口）。\n部署8个无线天线（deployment_location为A省C市新区，region为A省C市，quantity为8，unit为台，network_mode为5G SA，frequency_band为700MHz n28，bandwidth为160MHz，interface为射频馈线接口）。\n部署2个手机终端（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_mode为4G/5G双模，frequency_band为700MHz n28，bandwidth为200MHz，interface为Uu空口）。\n远端射频单元通过射频馈线与无线天线建立connects_to关系。\nAAU通过有源天线射频链路与无线天线建立connects_to关系。\n无线天线通过5G NR空口与手机终端建立provides_access_to关系。\n基带单元通过CPRI前传与远端射频单元建立connects_to关系。\npRRU通过室内5G空口与手机终端建立provides_access_to关系。\n基带单元通过eCPRI前传与AAU建立connects_to关系。",
+      "output": {
+        "primary_scene": "new_metropolitan_network_and_services",
+        "primary_scene_name": "新型城域网及服务",
+        "secondary_scenes": [],
+        "scene_confidence": 1.0,
+        "entities": [
+          {
+            "instance_id": "man_radio_bbu",
+            "entity_type_id": "MAN_RADIO_BBU",
+            "raw_name": "基带单元",
+            "canonical_name": "基带处理单元BBU",
+            "category": "radio_access_network",
+            "quantity": 6,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 6,
+              "unit": "台",
+              "network_mode": "5G SA",
+              "frequency_band": "3.5GHz n78",
+              "bandwidth": "100MHz",
+              "interface": "eCPRI"
+            },
+            "evidence": "部署6个基带单元（deployment_location为A省C市新区，region为A省C市，quantity为6，unit为台，network_mode为5G SA，frequency_band为3.5GHz n78，bandwidth为100MHz，interface为eCPRI）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_radio_aau",
+            "entity_type_id": "MAN_RADIO_AAU",
+            "raw_name": "AAU",
+            "canonical_name": "有源天线处理单元AAU",
+            "category": "radio_access_network",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 4,
+              "unit": "台",
+              "network_mode": "5G SA",
+              "frequency_band": "3.5GHz n78",
+              "bandwidth": "100MHz",
+              "interface": "eCPRI"
+            },
+            "evidence": "部署4个AAU（deployment_location为A省C市新区，region为A省C市，quantity为4，unit为台，network_mode为5G SA，frequency_band为3.5GHz n78，bandwidth为100MHz，interface为eCPRI）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_radio_rru",
+            "entity_type_id": "MAN_RADIO_RRU",
+            "raw_name": "远端射频单元",
+            "canonical_name": "射频拉远单元RRU",
+            "category": "radio_access_network",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 2,
+              "unit": "台",
+              "network_mode": "4G/5G共站",
+              "frequency_band": "1.8GHz",
+              "bandwidth": "160MHz",
+              "interface": "CPRI"
+            },
+            "evidence": "部署2个远端射频单元（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_mode为4G/5G共站，frequency_band为1.8GHz，bandwidth为160MHz，interface为CPRI）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_radio_prru",
+            "entity_type_id": "MAN_RADIO_PRRU",
+            "raw_name": "pRRU",
+            "canonical_name": "小型远端射频单元pRRU",
+            "category": "radio_access_network",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 4,
+              "unit": "台",
+              "network_mode": "5G室内覆盖",
+              "frequency_band": "3.5GHz n78",
+              "bandwidth": "160MHz",
+              "interface": "eCPRI级联接口"
+            },
+            "evidence": "部署4个pRRU（deployment_location为A省C市新区，region为A省C市，quantity为4，unit为台，network_mode为5G室内覆盖，frequency_band为3.5GHz n78，bandwidth为160MHz，interface为eCPRI级联接口）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_radio_antenna",
+            "entity_type_id": "MAN_RADIO_ANTENNA",
+            "raw_name": "无线天线",
+            "canonical_name": "基站天线",
+            "category": "radio_access_network",
+            "quantity": 8,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 8,
+              "unit": "台",
+              "network_mode": "5G SA",
+              "frequency_band": "700MHz n28",
+              "bandwidth": "160MHz",
+              "interface": "射频馈线接口"
+            },
+            "evidence": "部署8个无线天线（deployment_location为A省C市新区，region为A省C市，quantity为8，unit为台，network_mode为5G SA，frequency_band为700MHz n28，bandwidth为160MHz，interface为射频馈线接口）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_user_equipment",
+            "entity_type_id": "MAN_USER_EQUIPMENT",
+            "raw_name": "手机终端",
+            "canonical_name": "用户终端UE",
+            "category": "radio_access_network",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 2,
+              "unit": "台",
+              "network_mode": "4G/5G双模",
+              "frequency_band": "700MHz n28",
+              "bandwidth": "200MHz",
+              "interface": "Uu空口"
+            },
+            "evidence": "部署2个手机终端（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_mode为4G/5G双模，frequency_band为700MHz n28，bandwidth为200MHz，interface为Uu空口）。",
+            "confidence": 1.0
+          }
+        ],
+        "relations": [
+          {
+            "source": "man_radio_rru",
+            "target": "man_radio_antenna",
+            "relation_type": "connects_to",
+            "interface": "射频馈线",
+            "protocol": "",
+            "evidence": "远端射频单元通过射频馈线与无线天线建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_radio_aau",
+            "target": "man_radio_antenna",
+            "relation_type": "connects_to",
+            "interface": "有源天线射频链路",
+            "protocol": "",
+            "evidence": "AAU通过有源天线射频链路与无线天线建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_radio_antenna",
+            "target": "man_user_equipment",
+            "relation_type": "provides_access_to",
+            "interface": "5G NR空口",
+            "protocol": "",
+            "evidence": "无线天线通过5G NR空口与手机终端建立provides_access_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_radio_bbu",
+            "target": "man_radio_rru",
+            "relation_type": "connects_to",
+            "interface": "CPRI前传",
+            "protocol": "",
+            "evidence": "基带单元通过CPRI前传与远端射频单元建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_radio_prru",
+            "target": "man_user_equipment",
+            "relation_type": "provides_access_to",
+            "interface": "室内5G空口",
+            "protocol": "",
+            "evidence": "pRRU通过室内5G空口与手机终端建立provides_access_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_radio_bbu",
+            "target": "man_radio_aau",
+            "relation_type": "connects_to",
+            "interface": "eCPRI前传",
+            "protocol": "",
+            "evidence": "基带单元通过eCPRI前传与AAU建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          }
+        ],
+        "unresolved_items": []
+      }
+    },
+    {
+      "sample_id": "MAN-TR-101",
+      "scene_id": "new_metropolitan_network_and_services",
+      "keywords": [
+        "4G分布式用户面",
+        "SPN落地节点",
+        "中国移动互联网",
+        "骨干核心路由器",
+        "边缘UPF",
+        "承载网络"
+      ],
+      "input": "创建一个新型城域网及服务示例环境。\n部署1个承载网络（deployment_location为A省C市新区，region为A省C市，quantity为1，unit为个，bandwidth为100Gbps，latency为不高于2ms，redundancy为双平面）。\n部署1个中国移动互联网（deployment_location为A省C市新区，region为A省C市，quantity为1，unit为个，bandwidth为100Gbps，latency为不高于5ms，redundancy为双平面）。\n部署4个边缘UPF（deployment_location为A省C市新区，region为A省C市，quantity为4，unit为个实例，network_generation为5G SA，protocol为PFCP，interface为N3/N6接口，capacity为100Gbps用户面吞吐，redundancy为N+1集群）。\n部署2个4G分布式用户面（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为个实例，network_generation为4G EPC，protocol为Sx，interface为S1-U/SGi接口，capacity为40Gbps用户面吞吐，redundancy为N+1集群）。\n部署2个SPN落地节点（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_level为省干落地层，bandwidth为50GE，protocol为EVPN，protection为双归属保护）。\n部署2个骨干核心路由器（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_level为核心层，bandwidth为100GE，protocol为BGP，redundancy为双机双归属）。\n承载网络通过省网互联链路与中国移动互联网建立connects_to关系。\n4G分布式用户面通过SGi互联网出口与中国移动互联网建立connects_to关系。\n边缘UPF通过N6互联网出口与中国移动互联网建立connects_to关系。\n承载网络通过100GE SPN落地链路与SPN落地节点建立connects_to关系。\n承载网络通过双路100GE骨干链路与骨干核心路由器建立connects_to关系。",
+      "output": {
+        "primary_scene": "new_metropolitan_network_and_services",
+        "primary_scene_name": "新型城域网及服务",
+        "secondary_scenes": [],
+        "scene_confidence": 1.0,
+        "entities": [
+          {
+            "instance_id": "man_ip_bearer_network",
+            "entity_type_id": "MAN_IP_BEARER_NETWORK",
+            "raw_name": "承载网络",
+            "canonical_name": "IP承载网",
+            "category": "regional_center_and_network_domain",
+            "quantity": 1,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 1,
+              "unit": "个",
+              "bandwidth": "100Gbps",
+              "latency": "不高于2ms",
+              "redundancy": "双平面"
+            },
+            "evidence": "部署1个承载网络（deployment_location为A省C市新区，region为A省C市，quantity为1，unit为个，bandwidth为100Gbps，latency为不高于2ms，redundancy为双平面）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_cmnet_network",
+            "entity_type_id": "MAN_CMNET_NETWORK",
+            "raw_name": "中国移动互联网",
+            "canonical_name": "CMNET网络",
+            "category": "regional_center_and_network_domain",
+            "quantity": 1,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 1,
+              "unit": "个",
+              "bandwidth": "100Gbps",
+              "latency": "不高于5ms",
+              "redundancy": "双平面"
+            },
+            "evidence": "部署1个中国移动互联网（deployment_location为A省C市新区，region为A省C市，quantity为1，unit为个，bandwidth为100Gbps，latency为不高于5ms，redundancy为双平面）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_distributed_anchor_upf",
+            "entity_type_id": "MAN_DISTRIBUTED_ANCHOR_UPF",
+            "raw_name": "边缘UPF",
+            "canonical_name": "分布式锚点UPF",
+            "category": "mobile_core_edge",
+            "quantity": 4,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 4,
+              "unit": "个实例",
+              "network_generation": "5G SA",
+              "protocol": "PFCP",
+              "interface": "N3/N6接口",
+              "capacity": "100Gbps用户面吞吐",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署4个边缘UPF（deployment_location为A省C市新区，region为A省C市，quantity为4，unit为个实例，network_generation为5G SA，protocol为PFCP，interface为N3/N6接口，capacity为100Gbps用户面吞吐，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_distributed_anchor_sgw_u",
+            "entity_type_id": "MAN_DISTRIBUTED_ANCHOR_SGW_U",
+            "raw_name": "4G分布式用户面",
+            "canonical_name": "分布式锚点S-GW-U",
+            "category": "mobile_core_edge",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 2,
+              "unit": "个实例",
+              "network_generation": "4G EPC",
+              "protocol": "Sx",
+              "interface": "S1-U/SGi接口",
+              "capacity": "40Gbps用户面吞吐",
+              "redundancy": "N+1集群"
+            },
+            "evidence": "部署2个4G分布式用户面（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为个实例，network_generation为4G EPC，protocol为Sx，interface为S1-U/SGi接口，capacity为40Gbps用户面吞吐，redundancy为N+1集群）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_landing_spn",
+            "entity_type_id": "MAN_LANDING_SPN",
+            "raw_name": "SPN落地节点",
+            "canonical_name": "落地SPN",
+            "category": "spn_transport_network",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 2,
+              "unit": "台",
+              "network_level": "省干落地层",
+              "bandwidth": "50GE",
+              "protocol": "EVPN",
+              "protection": "双归属保护"
+            },
+            "evidence": "部署2个SPN落地节点（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_level为省干落地层，bandwidth为50GE，protocol为EVPN，protection为双归属保护）。",
+            "confidence": 1.0
+          },
+          {
+            "instance_id": "man_core_router",
+            "entity_type_id": "MAN_CORE_ROUTER",
+            "raw_name": "骨干核心路由器",
+            "canonical_name": "核心路由器",
+            "category": "ip_and_optical_transport",
+            "quantity": 2,
+            "attributes": {
+              "deployment_location": "A省C市新区",
+              "region": "A省C市",
+              "quantity": 2,
+              "unit": "台",
+              "network_level": "核心层",
+              "bandwidth": "100GE",
+              "protocol": "BGP",
+              "redundancy": "双机双归属"
+            },
+            "evidence": "部署2个骨干核心路由器（deployment_location为A省C市新区，region为A省C市，quantity为2，unit为台，network_level为核心层，bandwidth为100GE，protocol为BGP，redundancy为双机双归属）。",
+            "confidence": 1.0
+          }
+        ],
+        "relations": [
+          {
+            "source": "man_ip_bearer_network",
+            "target": "man_cmnet_network",
+            "relation_type": "connects_to",
+            "interface": "省网互联链路",
+            "protocol": "",
+            "evidence": "承载网络通过省网互联链路与中国移动互联网建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_distributed_anchor_sgw_u",
+            "target": "man_cmnet_network",
+            "relation_type": "connects_to",
+            "interface": "SGi互联网出口",
+            "protocol": "",
+            "evidence": "4G分布式用户面通过SGi互联网出口与中国移动互联网建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_distributed_anchor_upf",
+            "target": "man_cmnet_network",
+            "relation_type": "connects_to",
+            "interface": "N6互联网出口",
+            "protocol": "",
+            "evidence": "边缘UPF通过N6互联网出口与中国移动互联网建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": ""
+          },
+          {
+            "source": "man_ip_bearer_network",
+            "target": "man_landing_spn",
+            "relation_type": "connects_to",
+            "interface": "100GE SPN落地链路",
+            "protocol": "",
+            "evidence": "承载网络通过100GE SPN落地链路与SPN落地节点建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "100Gbps"
+          },
+          {
+            "source": "man_ip_bearer_network",
+            "target": "man_core_router",
+            "relation_type": "connects_to",
+            "interface": "双路100GE骨干链路",
+            "protocol": "",
+            "evidence": "承载网络通过双路100GE骨干链路与骨干核心路由器建立connects_to关系。",
+            "confidence": 1.0,
+            "bandwidth": "100Gbps"
+          }
+        ],
+        "unresolved_items": []
+      }
+    }
+  ]
+}

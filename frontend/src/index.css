@@ -70,7 +70,29 @@
   border: 1.5px solid #7fa6cc;
 }
 .react-flow__edges {
-  z-index: 0;
+  z-index: auto;
+}
+.react-flow__edgelabel-renderer {
+  z-index: 5;
+}
+.topology-edge-label {
+  position: absolute;
+  padding: 4px 6px;
+  border: 1px solid #d5dfeb;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 1px 4px #18365018;
+  color: #41546b;
+  font: 500 10px/14px ui-monospace, monospace;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  pointer-events: auto;
+}
+.topology-edge-label:hover {
+  z-index: 10;
+  border-color: #0072ce;
+  box-shadow: 0 2px 8px #18365025;
 }
 .react-flow__edge-path {
   stroke: #8aa9c7;

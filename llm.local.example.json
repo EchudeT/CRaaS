@@ -1,0 +1,41 @@
+{
+  "active_profile": "deepseek-v4-flash",
+  "profiles": {
+    "deepseek-v4-flash": {
+      "base_url": "https://api.deepseek.com",
+      "protocol": "openai",
+      "model": "deepseek-v4-flash",
+      "api_key": "",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "timeout_seconds": 600,
+      "max_output_tokens": 131072,
+      "concurrency": 16,
+      "stream": true,
+      "extra_body": { "thinking": { "type": "enabled" }, "reasoning_effort": "high" }
+    },
+    "glm-flash": {
+      "base_url": "https://cc2.caaa.tech/v1",
+      "protocol": "anthropic",
+      "model": "glm-5.3-flash",
+      "api_key": "",
+      "api_key_env": "TOPOLOGY_BENCH_API_KEY",
+      "timeout_seconds": 240,
+      "max_output_tokens": 18000,
+      "concurrency": 3,
+      "stream": true,
+      "extra_body": { "thinking": { "type": "disabled" } }
+    },
+    "other-model": {
+      "base_url": "https://your-provider.example/v1",
+      "protocol": "openai",
+      "model": "replace-with-model-name",
+      "api_key": "",
+      "api_key_env": "OTHER_LLM_API_KEY",
+      "timeout_seconds": 240,
+      "max_output_tokens": 18000,
+      "concurrency": 3,
+      "stream": true,
+      "extra_body": {}
+    }
+  }
+}
