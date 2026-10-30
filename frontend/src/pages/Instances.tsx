@@ -5,33 +5,38 @@ import { api } from '@/lib/api'
 import type { Instance } from '@/lib/types'
 import { Badge, Button, Card, Empty, Progress, StatCard, Tabs, toast } from '@/components/ui'
 import { shortTime, statusLabel, statusTone } from '@/lib/utils'
+import { SceneBar, DataBadge, useScene, useRequestGuard } from '@/components/SceneContext'
 
 const STATUS_TABS = [
   { value: '', label: '全部' },
+  { value: 'demo', label: '离线演示' },
   { value: 'running', label: '运行中' },
   { value: 'provisioning', label: '部署中' },
   { value: 'destroyed', label: '已销毁' },
 ]
 
 export default function Instances() {
+  const [scene, setScene] = useScene()
   const [items, setItems] = useState<Instance[]>([])
   const [tab, setTab] = useState('')
   const [loading, setLoading] = useState(true)
+  const beginRequest = useRequestGuard(scene)
 
   function load(silent = false) {
+    const current = beginRequest()
     if (!silent) setLoading(true)
     api
-      .instances()
-      .then((r) => setItems(r.items))
-      .catch(() => toast('加载实例失败', 'error'))
-      .finally(() => setLoading(false))
+      .instances(scene)
+      .then((r) => { if (current()) setItems(r.items) })
+      .catch(() => { if (current()) { setItems([]); toast('加载实例失败', 'error') } })
+      .finally(() => { if (current()) setLoading(false) })
   }
 
   useEffect(() => {
     load()
     const t = setInterval(() => load(true), 4000)
     return () => clearInterval(t)
-  }, [])
+  }, [scene])
 
   const filtered = useMemo(() => {
     let list = items
@@ -51,6 +56,8 @@ export default function Instances() {
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={setScene} />
+      <p className="text-xs text-ink-500">“演示数据”为预置展示记录，未创建真实平台资源；离线演示不计入运行实例。</p>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="运行中" value={stats.running} suffix="个" tone="ok" icon={<CheckCircle2 className="h-4 w-4" />} />
         <StatCard label="部署中" value={stats.provisioning} suffix="个" tone="brand" icon={<Loader2 className="h-4 w-4" />} />
@@ -82,9 +89,11 @@ export default function Instances() {
                       {i.name}
                     </Link>
                     <Badge className={statusTone(i.status)} dot>
-                      {statusLabel[i.status] ?? i.status}
+                      {i.status === 'demo' ? '离线演示' : statusLabel[i.status] ?? i.status}
                     </Badge>
                     <Badge className="border-slate-200 bg-slate-50 text-ink-500">{i.business_name}</Badge>
+                    <DataBadge demo={i.is_demo} />
+                    <span className="text-xs text-brand-600">{i.scene_name}</span>
                   </div>
                   <div className="mono-num mt-1 text-[11px] text-ink-400">
                     {i.id} · {i.station} · {i.nodes?.length ?? 0} 节点 · {shortTime(i.created_at)}

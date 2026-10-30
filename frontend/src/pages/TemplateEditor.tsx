@@ -3,22 +3,25 @@ import {
   CheckCircle2,
   Code2,
   Copy,
-  Plus,
   Rocket,
   Save,
   Trash2,
   Wand2,
   Workflow,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '@/lib/api'
 import type { Scenario, Template, Validation } from '@/lib/types'
 import { CodeView } from '@/components/CodeView'
 import { TopologyCanvas } from '@/components/TopologyCanvas'
 import { nodeMeta } from '@/components/nodeMeta'
-import { Badge, Button, Card, Field, Input, Modal, Select, toast } from '@/components/ui'
+import { Badge, Button, Card, Field, Input, Select, toast } from '@/components/ui'
+import { NodePalette } from '@/components/NodePalette'
+import { insertPaletteNode, type NodeDrop, type PaletteItem } from '@/lib/topologyEditing'
 import { cn, copy } from '@/lib/utils'
+import { TopologyEvidence } from '@/components/TopologyEvidence'
+import { DataBadge } from '@/components/SceneContext'
 
 const IMAGE_OPTIONS = [
   'router-vr-8',
@@ -40,14 +43,16 @@ export default function TemplateEditor() {
   const [selected, setSelected] = useState<string | null>(null)
   const [validation, setValidation] = useState<Validation | null>(null)
   const [codeDraft, setCodeDraft] = useState('')
-  const [addOpen, setAddOpen] = useState(false)
-  const [newNode, setNewNode] = useState({ name: '新节点', type: 'server', zone: '', ip: '10.0.0.10' })
+  const draggedItem = useRef<PaletteItem | null>(null)
+  const addAtCenter = useRef<((itemId: string) => void) | null>(null)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     api
       .template(id)
       .then((t) => {
+        draggedItem.current = null
+        setSelected(null)
         setTemplate(t)
         setScenario(t.topology)
         setCodeDraft(JSON.stringify(t.topology, null, 2))
@@ -126,34 +131,16 @@ export default function TemplateEditor() {
     }
   }
 
-  function addNode() {
-    if (!scenario) return
-    const zone = newNode.zone || scenario.zones[0]?.id || 'zone_edge'
-    setScenario({
-      ...scenario,
-      nodes: [
-        ...scenario.nodes,
-        {
-          id: `n_${Math.random().toString(36).slice(2, 10)}`,
-          name: newNode.name,
-          type: newNode.type as never,
-          zone,
-          ip: newNode.ip,
-          image: IMAGE_OPTIONS[3],
-          flavor: '2C4G',
-          cpu: 2,
-          memory: 4096,
-          disk: 40,
-          ports: 4,
-          role: '新增节点',
-          status: 'running',
-          ...(scenario.kind === 'logical' ? { quantity: 1, image: '', flavor: '', cpu: 0, memory: 0, disk: 0, ports: 0, ip: '', status: 'planned' } : {}),
-        },
-      ],
-    })
-    setAddOpen(false)
-    toast('已添加节点，请补全连线与 IP')
-  }
+  const addDroppedNode = useCallback((itemId: string, drop: NodeDrop) => {
+    const item = draggedItem.current
+    if (!item || item.id !== itemId) return
+    const id = `n_${crypto.randomUUID().replaceAll('-', '')}`
+    setScenario((s) => s ? insertPaletteNode(s, item, drop, id) : s)
+    setSelected(id)
+    toast('已手工添加节点，可在右侧编辑属性；保存模板后生效')
+  }, [])
+
+  const registerCenter = useCallback((add: (itemId: string) => void) => { addAtCenter.current = add }, [])
 
   async function save() {
     if (!scenario || !template) return
@@ -189,8 +176,10 @@ export default function TemplateEditor() {
               <span className="text-[15px] font-semibold text-ink-900">{template.name}</span>
               <Badge className="border-brand-200 bg-brand-50 text-brand-600">{template.business_name}</Badge>
               <Badge className="border-slate-200 bg-slate-50 text-ink-500">
-                {template.source === 'llm' ? 'LLM 生成' : '规则引擎'}
+                {template.source === 'example' ? '内置示例' : template.source === 'llm' ? 'LLM 生成' : '规则引擎'}
               </Badge>
+              <DataBadge demo={template.is_demo} />
+              <span className="text-xs text-brand-600">{template.scene_name}</span>
             </div>
             <div className="mt-0.5 text-[11.5px] text-ink-400">
               {scenario.zones.length} 个区域 · {scenario.nodes.length} 个节点 · {scenario.links.length} 条链路
@@ -200,9 +189,6 @@ export default function TemplateEditor() {
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onClick={autoLayout} icon={<Wand2 className="h-3.5 w-3.5" />}>
             自动布局
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)} icon={<Plus className="h-3.5 w-3.5" />}>
-            添加节点
           </Button>
           <Button
             variant="secondary"
@@ -230,30 +216,16 @@ export default function TemplateEditor() {
       </div>
 
       {/* 三栏 */}
-      <div className="grid gap-3 xl:grid-cols-[320px_minmax(0,1fr)_300px]">
-        <Card className="flex min-h-[560px] flex-col overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line px-3 py-2">
-            <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink-700">
-              <Code2 className="h-3.5 w-3.5 text-brand-500" /> 代码编辑器
-            </span>
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" onClick={() => setCodeDraft(code)}>
-                重置
-              </Button>
-              <Button variant="outline" size="sm" onClick={applyCode}>
-                应用代码
-              </Button>
-            </div>
-          </div>
-          <CodeView value={codeDraft} onChange={setCodeDraft} height={520} className="flex-1" />
-        </Card>
+      <div className="grid items-start gap-3 xl:grid-cols-[180px_minmax(0,1fr)_280px]">
+        <NodePalette scenario={scenario} onDragItem={(item) => { draggedItem.current = item }} onDragEnd={() => { draggedItem.current = null }}
+          onAdd={(item) => { draggedItem.current = item; addAtCenter.current?.(item.id); draggedItem.current = null }} />
 
-        <Card className="flex min-h-[560px] flex-col overflow-hidden">
+        <Card className="flex h-[650px] min-w-0 flex-col overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-3 py-2">
             <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink-700">
               <Workflow className="h-3.5 w-3.5 text-brand-500" /> 图形编辑器
             </span>
-            <span className="text-[11px] text-ink-400">拖拽节点可调整布局，保存后生效</span>
+            <span className="text-[11px] text-ink-400">从左侧拖入节点，右侧编辑属性</span>
           </div>
           <div className="flex-1 p-3">
             <TopologyCanvas
@@ -264,6 +236,8 @@ export default function TemplateEditor() {
               withLabels
               selectedId={selected}
               onSelect={setSelected}
+              onAddNode={addDroppedNode}
+              onAddAtCenter={registerCenter}
               onDragStop={(positions) =>
                 setScenario((s) =>
                   s
@@ -280,7 +254,7 @@ export default function TemplateEditor() {
           </div>
         </Card>
 
-        <Card className="flex min-h-[560px] flex-col overflow-hidden">
+        <Card className="flex min-h-[560px] flex-col overflow-hidden xl:max-h-[650px]">
           <div className="flex items-center justify-between border-b border-line px-3 py-2">
             <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink-700">
               <CheckCircle2 className="h-3.5 w-3.5 text-brand-500" /> 拓扑检查器
@@ -320,6 +294,12 @@ export default function TemplateEditor() {
                     <Input type="number" min={1} value={node.quantity ?? 1} onChange={(e) => patchNode({ quantity: Number(e.target.value) })} />
                   </Field>
                 )}
+                {scenario.kind === 'logical' && <div className="space-y-2 rounded-lg border border-line p-2 text-[11px]">
+                  {node.origin === 'manual' && <Badge className="border-amber-200 bg-amber-50 text-amber-700">手工添加</Badge>}
+                  <div className="break-all text-brand-600">{node.entity_type_id || '待指定实体类型'}</div>
+                  <Field label="原文依据"><Input value={node.evidence || ''} placeholder="手工补充依据，勿伪造原文" onChange={(e) => patchNode({ evidence: e.target.value })} /></Field>
+                  <div className="break-words leading-5 text-ink-500">属性：{JSON.stringify(node.attributes || {}, null, 1)}</div>
+                </div>}
                 <div className="grid grid-cols-2 gap-2">
                   <Field label="类型">
                     <Select
@@ -456,51 +436,18 @@ export default function TemplateEditor() {
         </Card>
       )}
 
-      <Modal
-        open={addOpen}
-        onClose={() => setAddOpen(false)}
-        title="添加节点"
-        width="max-w-md"
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setAddOpen(false)}>
-              取消
-            </Button>
-            <Button variant="primary" onClick={addNode}>
-              添加
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-3">
-          <Field label="节点名称" required>
-            <Input value={newNode.name} onChange={(e) => setNewNode({ ...newNode, name: e.target.value })} />
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="类型">
-              <Select
-                value={newNode.type}
-                onChange={(v) => setNewNode({ ...newNode, type: v })}
-                options={Object.entries(nodeMeta).map(([k, m]) => ({ value: k, label: m.label }))}
-              />
-            </Field>
-            <Field label="所属区域">
-              <Select
-                value={newNode.zone || scenario.zones[0]?.id || ''}
-                onChange={(v) => setNewNode({ ...newNode, zone: v })}
-                options={scenario.zones.map((z) => ({ value: z.id, label: z.name }))}
-              />
-            </Field>
+      {scenario.kind === 'logical' && <TopologyEvidence scenario={scenario} />}
+
+      <Card className="overflow-hidden">
+        <details>
+          <summary className="flex cursor-pointer items-center gap-2 px-4 py-3 text-xs font-medium text-ink-700"><Code2 className="h-4 w-4 text-brand-500" />代码编辑器 · 展开查看和编辑 JSON</summary>
+          <div className="flex items-center justify-end gap-2 border-y border-line px-3 py-2">
+            <Button variant="ghost" size="sm" onClick={() => setCodeDraft(code)}>重置</Button>
+            <Button variant="outline" size="sm" onClick={applyCode}>应用代码</Button>
           </div>
-          <Field label="IP 地址" required>
-            <Input
-              value={newNode.ip}
-              onChange={(e) => setNewNode({ ...newNode, ip: e.target.value })}
-              className="mono-num"
-            />
-          </Field>
-        </div>
-      </Modal>
+          <CodeView value={codeDraft} onChange={setCodeDraft} height={400} />
+        </details>
+      </Card>
     </div>
   )
 }

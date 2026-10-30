@@ -4,19 +4,25 @@ import { api } from '@/lib/api'
 import type { StorageRes } from '@/lib/types'
 import { Badge, Card, Empty, Progress, StatCard, toast } from '@/components/ui'
 import { shortTime } from '@/lib/utils'
+import { ResourceAssociation, SceneBar, useScene, useRequestGuard } from '@/components/SceneContext'
 
 export default function StoragePage() {
+  const [scene, setScene] = useScene()
+  const beginRequest = useRequestGuard(scene)
   const [items, setItems] = useState<StorageRes[]>([])
 
-  useEffect(() => {
-    api.storage().then((r) => setItems(r.items)).catch(() => toast('加载存储资源失败', 'error'))
-  }, [])
+  function load() {
+    const current = beginRequest()
+    api.storage(scene).then((r) => { if (current()) setItems(r.items) }).catch(() => { if (current()) { setItems([]); toast('加载存储资源失败', 'error') } })
+  }
+  useEffect(load, [scene])
 
   const total = items.reduce((s, i) => s + i.capacity_tb, 0)
   const used = items.reduce((s, i) => s + i.used_tb, 0)
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={setScene} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="存储池" value={items.length} suffix="个" icon={<Database className="h-4 w-4" />} />
         <StatCard label="总容量" value={total} suffix="TB" tone="muted" icon={<HardDrive className="h-4 w-4" />} />
@@ -53,7 +59,7 @@ export default function StoragePage() {
             <tbody>
               {items.map((s) => (
                 <tr key={s.id} className="border-b border-line/70 last:border-0 hover:bg-slate-50/50">
-                  <td className="px-4 py-2.5 font-medium text-ink-900">{s.name}</td>
+                  <td className="px-4 py-2.5 font-medium text-ink-900">{s.name}<ResourceAssociation item={s} kind="storage" onSaved={load} /></td>
                   <td className="px-4 py-2.5 text-ink-600">{s.storage_type}</td>
                   <td className="px-4 py-2.5 text-ink-600">{s.site}</td>
                   <td className="mono-num px-4 py-2.5 text-ink-600">

@@ -2,18 +2,21 @@ import uuid
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import ComputeNode, Image, NetworkResource, StorageResource
+from ..models import ComputeNode, Image, NetworkResource, StorageResource, ResourceContext
 from ..providers import driver_status, resource_provider
+from ..services.scene_data import check_scene, contextualize, resource_context, validate_scene_ids
+from ..services.extraction import CATALOG
 
 router = APIRouter(prefix="/api/resources", tags=["resources"])
 
 
 class ImageIn(BaseModel):
+    scene_ids: list[str] = Field(default_factory=list)
     name: str
     category: str = "应用镜像"
     sub_category: str = "通用镜像"
@@ -25,6 +28,7 @@ class ImageIn(BaseModel):
 
 
 class ComputeIn(BaseModel):
+    scene_ids: list[str] = Field(default_factory=list)
     name: str
     node_type: str = "物理机"
     cluster: str = ""
@@ -121,42 +125,47 @@ def network(n: NetworkResource) -> dict:
 
 
 @router.get("/overview")
-def overview(db: Session = Depends(get_db)) -> dict:
+def overview(scene: str = "", db: Session = Depends(get_db)) -> dict:
+    check_scene(scene)
     images = db.execute(select(Image)).scalars().all()
     comp = db.execute(select(ComputeNode)).scalars().all()
     stor = db.execute(select(StorageResource)).scalars().all()
     net = db.execute(select(NetworkResource)).scalars().all()
+    images = contextualize(db, "image", images, img, scene)
+    comp = contextualize(db, "compute", comp, compute, scene)
+    stor = contextualize(db, "storage", stor, storage, scene)
+    net = contextualize(db, "network", net, network, scene)
+    entity_count = sum(len(s["entities"]) for sid, s in CATALOG["scenes"].items() if not scene or sid == scene)
     return {
         "cards": [
-            {"id": "image", "name": "场景镜像", "count": 486, "unit": "个", "desc": "操作系统 / 应用 / 安全工具 / 网络设备 / 环境 / 容器", "real": len(images)},
-            {"id": "device", "name": "场景设备", "count": 128, "unit": "台", "desc": "路由器、交换机、防火墙、PLC、IDS 等虚拟设备", "real": 128},
+            {"id": "image", "name": "场景镜像", "count": len(images), "unit": "个", "desc": "已录入镜像（含明确标注的演示占位）", "real": len(images)},
+            {"id": "device", "name": "实体类型目录", "count": entity_count, "unit": "类", "desc": "逻辑实体类型，不代表已部署设备", "real": entity_count},
             {"id": "compute", "name": "计算资源", "count": len(comp), "unit": "节点", "desc": "物理机 / 虚拟机 / GPU 节点统一纳管", "real": len(comp)},
             {"id": "storage", "name": "存储资源", "count": len(stor), "unit": "池", "desc": "分布式块存储 / 对象存储 / 共享文件存储", "real": len(stor)},
             {"id": "network", "name": "网络资源", "count": len(net), "unit": "网段", "desc": "VXLAN 虚拟网络、VLAN 隔离、专线通道", "real": len(net)},
         ],
-        "industry_extra": [
-            {"name": "交通行业特有资源", "count": 28},
-            {"name": "水利行业特有资源", "count": 15},
-            {"name": "能源行业特有资源", "count": 22},
-        ],
+        "industry_extra": [],
+        "resources": {"image": images, "compute": comp, "storage": stor, "network": net},
+        "demo_count": sum(r["is_demo"] for r in [*images, *comp, *stor, *net]),
     }
 
 
 @router.get("/images")
-def list_images(category: str = "", q: str = "", db: Session = Depends(get_db)) -> dict:
+def list_images(category: str = "", q: str = "", scene: str = "", db: Session = Depends(get_db)) -> dict:
     items = db.execute(select(Image).order_by(Image.created_at.desc())).scalars().all()
     if category and category != "全部":
         items = [i for i in items if i.category == category]
     if q:
         items = [i for i in items if q.lower() in i.name.lower()]
     return {
-        "items": [img(i) for i in items],
+        "items": contextualize(db, "image", items, img, scene),
         "categories": ["全部", "操作系统", "应用镜像", "安全工具", "网络设备", "环境镜像", "容器镜像"],
     }
 
 
 @router.post("/images")
 def add_image(payload: ImageIn, db: Session = Depends(get_db)) -> dict:
+    scene_ids = validate_scene_ids(payload.scene_ids)
     i = Image(
         id=f"img_{uuid.uuid4().hex[:8]}",
         name=payload.name,
@@ -171,26 +180,29 @@ def add_image(payload: ImageIn, db: Session = Depends(get_db)) -> dict:
         created_at=datetime.now(),
     )
     db.add(i)
+    db.add(ResourceContext(kind="image", resource_id=i.id, scene_ids=scene_ids, data_origin="registered"))
     db.commit()
     db.refresh(i)
-    return img(i)
+    return contextualize(db, "image", [i], img)[0]
 
 
 @router.get("/compute")
-def list_compute(db: Session = Depends(get_db)) -> dict:
+def list_compute(scene: str = "", db: Session = Depends(get_db)) -> dict:
     items = db.execute(select(ComputeNode).order_by(ComputeNode.name)).scalars().all()
+    rows = contextualize(db, "compute", items, compute, scene)
     return {
-        "items": [compute(n) for n in items],
+        "items": rows,
         "summary": {
-            "total": len(items),
-            "online": sum(1 for n in items if n.status == "在线"),
-            "schedulable": sum(1 for n in items if n.status in ("在线", "运行中")),
+            "total": len(rows),
+            "online": sum(n["status"] == "在线" for n in rows),
+            "schedulable": sum(n["status"] in ("在线", "运行中") for n in rows),
         },
     }
 
 
 @router.post("/compute")
 def add_compute(payload: ComputeIn, db: Session = Depends(get_db)) -> dict:
+    scene_ids = validate_scene_ids(payload.scene_ids)
     n = ComputeNode(
         id=f"cmp_{uuid.uuid4().hex[:8]}",
         name=payload.name,
@@ -215,21 +227,42 @@ def add_compute(payload: ComputeIn, db: Session = Depends(get_db)) -> dict:
         created_at=datetime.now(),
     )
     db.add(n)
+    db.add(ResourceContext(kind="compute", resource_id=n.id, scene_ids=scene_ids, data_origin="registered"))
     db.commit()
     db.refresh(n)
-    return compute(n)
+    return contextualize(db, "compute", [n], compute)[0]
 
 
 @router.get("/storage")
-def list_storage(db: Session = Depends(get_db)) -> dict:
+def list_storage(scene: str = "", db: Session = Depends(get_db)) -> dict:
     items = db.execute(select(StorageResource).order_by(StorageResource.name)).scalars().all()
-    return {"items": [storage(s) for s in items]}
+    return {"items": contextualize(db, "storage", items, storage, scene)}
 
 
 @router.get("/network")
-def list_network(db: Session = Depends(get_db)) -> dict:
+def list_network(scene: str = "", db: Session = Depends(get_db)) -> dict:
     items = db.execute(select(NetworkResource).order_by(NetworkResource.name)).scalars().all()
-    return {"items": [network(n) for n in items]}
+    return {"items": contextualize(db, "network", items, network, scene)}
+
+
+class ContextIn(BaseModel):
+    scene_ids: list[str]
+
+
+@router.put("/{kind}/{resource_id}/context")
+def assign_context(kind: str, resource_id: str, payload: ContextIn, db: Session = Depends(get_db)):
+    """真实资源同步或录入后，复用同一场景关联；来源标记不能由此接口伪造。"""
+    model = {"image": Image, "compute": ComputeNode, "storage": StorageResource, "network": NetworkResource}.get(kind)
+    if model is None or db.get(model, resource_id) is None:
+        raise HTTPException(404, "资源不存在")
+    scene_ids = validate_scene_ids(payload.scene_ids)
+    context = db.get(ResourceContext, (kind, resource_id))
+    if context is None:
+        context = ResourceContext(kind=kind, resource_id=resource_id, data_origin="registered")
+        db.add(context)
+    context.scene_ids = scene_ids
+    db.commit()
+    return resource_context(context)
 
 
 # ------------------------------------------------------------ 资源同步（CMDB）
@@ -241,17 +274,27 @@ def drivers() -> dict:
 def _upsert(db: Session, model, rows: list[dict], prefix: str) -> int:
     """按名称覆盖写入，返回同步条数。"""
     count = 0
+    kind = {Image: "image", ComputeNode: "compute", NetworkResource: "network", StorageResource: "storage"}[model]
     for row in rows:
         name = row.get("name")
         if not name:
             continue
-        obj = db.execute(select(model).where(model.name == name)).scalars().first()
+        candidates = db.scalars(select(model).where(model.name == name)).all()
+        obj = next((candidate for candidate in candidates
+                    if not resource_context(db.get(ResourceContext, (kind, candidate.id)))["is_demo"]), None)
+        values = {key: value for key, value in row.items() if key in model.__table__.columns and key not in ("id", "created_at")}
         if obj:
-            for key, value in row.items():
-                if hasattr(obj, key):
-                    setattr(obj, key, value)
+            for key, value in values.items():
+                setattr(obj, key, value)
         else:
-            db.add(model(id=f"{prefix}_{uuid.uuid4().hex[:8]}", created_at=datetime.now(), **row))
+            obj = model(id=f"{prefix}_{uuid.uuid4().hex[:8]}", created_at=datetime.now(), **values)
+            db.add(obj)
+        context = db.get(ResourceContext, (kind, obj.id))
+        if context:
+            context.data_origin = "synced"
+        else:
+            db.add(ResourceContext(kind=kind, resource_id=obj.id, scene_ids=[], data_origin="synced"))
+        db.flush()
         count += 1
     return count
 

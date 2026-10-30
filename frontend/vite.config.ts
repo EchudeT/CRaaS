@@ -12,7 +12,7 @@ export default defineConfig({
     port: 5173,
     allowedHosts: true,
     proxy: {
-      '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/api': { target: process.env.API_PROXY_TARGET || 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
   preview: {
@@ -20,7 +20,7 @@ export default defineConfig({
     port: 4173,
     allowedHosts: true,
     proxy: {
-      '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/api': { target: process.env.API_PROXY_TARGET || 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
   build: {

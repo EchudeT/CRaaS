@@ -9,6 +9,7 @@ from ..models import Image, Instance, Template
 from ..services import topology as topo
 from ..providers import driver_status
 from ..services.executor import create_instance, destroy_instance, schedule_deploy
+from ..services.scene_data import check_scene, instance_context
 
 router = APIRouter(prefix="/api/instances", tags=["instances"])
 
@@ -30,6 +31,7 @@ class DeployReq(BaseModel):
 
 def serialize(inst: Instance) -> dict:
     return {
+        **instance_context(inst),
         "id": inst.id,
         "name": inst.name,
         "template_id": inst.template_id,
@@ -48,8 +50,11 @@ def serialize(inst: Instance) -> dict:
 
 
 @router.get("")
-def list_instances(db: Session = Depends(get_db)) -> dict:
+def list_instances(scene: str = "", db: Session = Depends(get_db)) -> dict:
+    check_scene(scene)
     items = db.execute(select(Instance).order_by(Instance.created_at.desc())).scalars().all()
+    if scene:
+        items = [i for i in items if instance_context(i)["scene"] == scene]
     return {"items": [serialize(i) for i in items]}
 
 
@@ -168,5 +173,7 @@ def destroy(instance_id: str, db: Session = Depends(get_db)) -> dict:
     inst = db.get(Instance, instance_id)
     if not inst:
         raise HTTPException(404, "实例不存在")
+    if inst.status == "demo":
+        raise HTTPException(422, "演示实例没有实际部署资源，无需调用平台销毁")
     destroy_instance(db, inst)
     return serialize(inst)

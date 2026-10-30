@@ -96,10 +96,13 @@ export function computeLayout(
       const p = pos.get(n.id)!
       const size = nodeDimensions(n, true)
       let collision
-      do {
-        collision = placed.find((r) => p.x < r.x + r.width + GAP_Y && p.x + size.width + GAP_Y > r.x && p.y < r.y + r.height + GAP_Y && p.y + size.height + GAP_Y > r.y)
-        if (collision) p.y = collision.y + collision.height + GAP_Y
-      } while (collision)
+      // 拖入的手工节点保持用户指定落点；点击自动布局时仍正常参与排布。
+      if (n.origin !== 'manual' || n.x == null || n.y == null || opts.ignoreSavedPositions) {
+        do {
+          collision = placed.find((r) => p.x < r.x + r.width + GAP_Y && p.x + size.width + GAP_Y > r.x && p.y < r.y + r.height + GAP_Y && p.y + size.height + GAP_Y > r.y)
+          if (collision) p.y = collision.y + collision.height + GAP_Y
+        } while (collision)
+      }
       placed.push({ ...p, width: size.width, height: size.height })
     })
   }

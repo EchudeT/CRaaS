@@ -135,3 +135,13 @@ class DispatchEvent(Base):
     after: Mapped[dict] = mapped_column(JSON, default=dict)
     status: Mapped[str] = mapped_column(String(32), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+
+
+class ResourceContext(Base):
+    """资源所属场景及来源，与平台资源表解耦，兼容已有数据库。"""
+    __tablename__ = "resource_contexts"
+
+    kind: Mapped[str] = mapped_column(String(32), primary_key=True)
+    resource_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    scene_ids: Mapped[list] = mapped_column(JSON, default=list)
+    data_origin: Mapped[str] = mapped_column(String(32), default="registered")

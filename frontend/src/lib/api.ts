@@ -13,6 +13,8 @@ import type {
   StorageRes,
   Template,
   Validation,
+  SceneInfo,
+  EntityInfo,
 } from './types'
 
 const BASE = '/api'
@@ -47,6 +49,8 @@ export interface Meta {
 }
 
 export const api = {
+  scenes: () => req<{ items: SceneInfo[] }>('/scenes'),
+  entities: (scene: string, q = '', category = '') => req<{ items: EntityInfo[]; total: number }>(`/scenes/${scene}/entities?${new URLSearchParams({ q, category })}`),
   meta: () => req<Meta>('/meta'),
 
   presets: () => req<{ items: { name: string; description: string; topology: Scenario }[] }>('/topology/presets'),
@@ -59,11 +63,12 @@ export const api = {
     post<GenerateResult>('/topology/rebuild', body),
   validate: (topology: Scenario) => post<Validation>('/topology/validate', { topology }),
 
-  templates: (params?: { q?: string; business?: string; industry?: string }) => {
+  templates: (params?: { q?: string; business?: string; industry?: string; scene?: string }) => {
     const qs = new URLSearchParams()
     if (params?.q) qs.set('q', params.q)
     if (params?.business) qs.set('business', params.business)
     if (params?.industry) qs.set('industry', params.industry)
+    if (params?.scene) qs.set('scene', params.scene)
     const s = qs.toString()
     return req<{ items: Template[]; total: number }>(`/templates${s ? `?${s}` : ''}`)
   },
@@ -81,7 +86,7 @@ export const api = {
   deleteTemplate: (id: string) => req<{ ok: boolean }>(`/templates/${id}`, { method: 'DELETE' }),
   validateTemplate: (id: string) => req<Validation>(`/templates/${id}/validate`),
 
-  instances: () => req<{ items: Instance[] }>('/instances'),
+  instances: (scene = '') => req<{ items: Instance[] }>(`/instances?${new URLSearchParams({ scene })}`),
   instance: (id: string) => req<Instance>(`/instances/${id}`),
   instanceStats: () =>
     req<{ running: number; provisioning: number; failed: number; destroyed: number; total_nodes: number }>(
@@ -98,29 +103,33 @@ export const api = {
   }) => post<Instance>('/instances', body),
   destroy: (id: string) => post<Instance>(`/instances/${id}/destroy`, {}),
 
-  resourceOverview: () =>
+  resourceOverview: (scene = '') =>
     req<{
       cards: { id: string; name: string; count: number; unit: string; desc: string; real: number }[]
       industry_extra: { name: string; count: number }[]
-    }>('/resources/overview'),
-  images: (params?: { category?: string; q?: string }) => {
+      resources: { image: ImageRes[]; compute: ComputeRes[]; storage: StorageRes[]; network: NetworkRes[] }
+      demo_count: number
+    }>(`/resources/overview?${new URLSearchParams({ scene })}`),
+  images: (params?: { category?: string; q?: string; scene?: string }) => {
     const qs = new URLSearchParams()
     if (params?.category && params.category !== '全部') qs.set('category', params.category)
     if (params?.q) qs.set('q', params.q)
+    if (params?.scene) qs.set('scene', params.scene)
     const s = qs.toString()
     return req<{ items: ImageRes[]; categories: string[] }>(`/resources/images${s ? `?${s}` : ''}`)
   },
   addImage: (body: Record<string, unknown>) => post<ImageRes>('/resources/images', body),
-  compute: () =>
+  compute: (scene = '') =>
     req<{ items: ComputeRes[]; summary: { total: number; online: number; schedulable: number } }>(
-      '/resources/compute',
+      `/resources/compute?${new URLSearchParams({ scene })}`,
     ),
   addCompute: (body: Record<string, unknown>) => post<ComputeRes>('/resources/compute', body),
-  storage: () => req<{ items: StorageRes[] }>('/resources/storage'),
-  network: () => req<{ items: NetworkRes[] }>('/resources/network'),
+  assignResourceScenes: (kind: string, id: string, scene_ids: string[]) => req(`/resources/${kind}/${id}/context`, { method: 'PUT', body: JSON.stringify({ scene_ids }) }),
+  storage: (scene = '') => req<{ items: StorageRes[] }>(`/resources/storage?${new URLSearchParams({ scene })}`),
+  network: (scene = '') => req<{ items: NetworkRes[] }>(`/resources/network?${new URLSearchParams({ scene })}`),
 
-  monitor: () => req<MonitorOverview>('/monitor/overview'),
-  nodeHistory: (id: string) => req<{ points: { t: string; cpu: number; memory: number; network: number }[] }>(`/monitor/nodes/${id}/history`),
+  monitor: (scene = '') => req<MonitorOverview>(`/monitor/overview?${new URLSearchParams({ scene })}`),
+  nodeHistory: (id: string) => req<{ source: string; points: { t: string; cpu: number; memory: number; network: number }[] }>(`/monitor/nodes/${id}/history`),
 
   events: (status?: string) =>
     req<{ items: DispatchEvent[]; summary: { pending: number; executed: number; ignored: number } }>(

@@ -39,6 +39,7 @@ export interface TopoNode {
   attributes?: Record<string, unknown>
   evidence?: string
   confidence?: number
+  origin?: 'manual'
   status?: string
   x?: number
   y?: number
@@ -83,6 +84,9 @@ export interface Scenario {
     scene_confidence?: number
     unresolved_items?: string[]
     deployment_ready?: boolean
+    is_demo?: boolean
+    sample_id?: string
+    data_source?: string
   }
 }
 
@@ -123,6 +127,10 @@ export interface GenerationJob {
 }
 
 export interface Template {
+  scene?: string
+  scene_name?: string
+  is_demo?: boolean
+  sample_id?: string
   id: string
   name: string
   description: string
@@ -155,13 +163,16 @@ export interface InstanceNode {
 }
 
 export interface Instance {
+  scene?: string
+  scene_name?: string
+  is_demo?: boolean
   id: string
   name: string
   template_id: string
   template_name: string
   business: string
   business_name: string
-  status: 'provisioning' | 'running' | 'failed' | 'destroyed'
+  status: 'provisioning' | 'running' | 'failed' | 'destroyed' | 'demo'
   stage: string
   progress: number
   station: string
@@ -202,7 +213,7 @@ export interface Preview {
   }
 }
 
-export interface ImageRes {
+export interface ImageRes extends ResourceContext {
   id: string
   name: string
   category: string
@@ -216,7 +227,7 @@ export interface ImageRes {
   created_at: string
 }
 
-export interface ComputeRes {
+export interface ComputeRes extends ResourceContext {
   id: string
   name: string
   node_type: string
@@ -240,7 +251,7 @@ export interface ComputeRes {
   created_at: string
 }
 
-export interface StorageRes {
+export interface StorageRes extends ResourceContext {
   id: string
   name: string
   storage_type: string
@@ -255,7 +266,7 @@ export interface StorageRes {
   created_at: string
 }
 
-export interface NetworkRes {
+export interface NetworkRes extends ResourceContext {
   id: string
   name: string
   network_type: string
@@ -270,6 +281,7 @@ export interface NetworkRes {
 }
 
 export interface Metrics {
+  source?: string
   cpu: number
   memory: number
   storage: number
@@ -294,8 +306,12 @@ export interface Pool {
 }
 
 export interface MonitorOverview {
+  instances?: { id: string; name: string; template_id: string; is_demo: boolean; scene: string; scene_name: string }[]
   pools: Pool[]
   nodes: {
+    is_demo?: boolean
+    scene_ids?: string[]
+    scene_names?: string[]
     id: string
     name: string
     site: string
@@ -310,6 +326,7 @@ export interface MonitorOverview {
     pool_count: number
     node_count: number
     instance_count: number
+    demo_instance_count?: number
     cpu_avg: number
     cost_per_hour: number
   }
@@ -337,4 +354,27 @@ export interface Business {
   name: string
   desc: string
   rule: string
+}
+
+export interface SceneInfo {
+  id: string
+  name: string
+  entity_count: number
+  categories: { id: string; name: string }[]
+}
+
+export interface EntityInfo {
+  display_type?: NodeType
+  entity_type_id: string
+  canonical_name: string
+  category_id: string
+  category_name: string
+  aliases: string[]
+}
+
+export interface ResourceContext {
+  scene_ids?: string[]
+  scene_names?: string[]
+  is_demo?: boolean
+  data_origin?: string
 }

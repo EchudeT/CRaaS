@@ -4,12 +4,15 @@ import { api } from '@/lib/api'
 import type { ImageRes } from '@/lib/types'
 import { Badge, Button, Card, Empty, Field, Input, Modal, Select, StatCard, Tabs, toast } from '@/components/ui'
 import { shortTime } from '@/lib/utils'
+import { ResourceAssociation, SceneBar, useScene, useRequestGuard } from '@/components/SceneContext'
 
 export default function Images() {
+  const [scene, setScene] = useScene()
   const [items, setItems] = useState<ImageRes[]>([])
   const [categories, setCategories] = useState<string[]>(['全部'])
   const [cat, setCat] = useState('全部')
   const [q, setQ] = useState('')
+  const beginRequest = useRequestGuard(`${scene}/${cat}/${q}`)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     name: '',
@@ -22,20 +25,22 @@ export default function Images() {
   })
 
   function load() {
+    const current = beginRequest()
     api
-      .images({ category: cat, q })
+      .images({ category: cat, q, scene })
       .then((r) => {
+        if (!current()) return
         setItems(r.items)
         setCategories(r.categories)
       })
-      .catch(() => toast('加载镜像失败', 'error'))
+      .catch(() => { if (current()) { setItems([]); toast('加载镜像失败', 'error') } })
   }
 
   useEffect(() => {
     const t = setTimeout(load, 200)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cat, q])
+  }, [cat, q, scene])
 
   async function submit() {
     if (!form.name.trim()) {
@@ -43,7 +48,7 @@ export default function Images() {
       return
     }
     try {
-      await api.addImage(form)
+      await api.addImage({ ...form, scene_ids: scene ? [scene] : [] })
       toast('镜像已录入')
       setOpen(false)
       setForm({ ...form, name: '' })
@@ -55,11 +60,12 @@ export default function Images() {
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={setScene} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="镜像总数" value={486} suffix="个" icon={<Disc3 className="h-4 w-4" />} />
-        <StatCard label="可用镜像" value={items.length} suffix="个" tone="ok" icon={<CheckCircle2 className="h-4 w-4" />} />
-        <StatCard label="行业特有" value={65} suffix="个" tone="muted" icon={<ShieldCheck className="h-4 w-4" />} />
-        <StatCard label="总容量" value="2.4" suffix="TB" tone="muted" icon={<HardDrive className="h-4 w-4" />} />
+        <StatCard label="当前筛选镜像" value={items.length} suffix="个" icon={<Disc3 className="h-4 w-4" />} />
+        <StatCard label="标记可用" value={items.filter((i) => i.status === '可用').length} suffix="个" tone="ok" icon={<CheckCircle2 className="h-4 w-4" />} />
+        <StatCard label="演示记录" value={items.filter((i) => i.is_demo).length} suffix="个" tone="muted" icon={<ShieldCheck className="h-4 w-4" />} />
+        <StatCard label="录入容量" value={items.reduce((s, i) => s + i.size_gb, 0)} suffix="GB" tone="muted" icon={<HardDrive className="h-4 w-4" />} />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -101,6 +107,7 @@ export default function Images() {
                       </div>
                       <span className="font-medium text-ink-900">{i.name}</span>
                     </div>
+                    <ResourceAssociation item={i} kind="image" onSaved={load} />
                   </td>
                   <td className="px-4 py-2.5 text-ink-600">{i.category}</td>
                   <td className="px-4 py-2.5 text-ink-500">{i.sub_category}</td>

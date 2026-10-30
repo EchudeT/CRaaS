@@ -208,7 +208,8 @@ def create_instance(
         stage="资源申请",
         progress=5,
         station=station,
-        profile=profile or {},
+        profile={**(profile or {}), "scene": topology.get("meta", {}).get("scene", ""),
+                 "is_demo": getattr(compute_provider(), "name", "mock") == "mock"},
         nodes=build_instance_nodes(topology),
     )
     db.add(inst)

@@ -16,6 +16,7 @@ import StoragePage from '@/pages/StoragePage'
 import NetworkPage from '@/pages/NetworkPage'
 import Monitor from '@/pages/Monitor'
 import Scheduler from '@/pages/Scheduler'
+import EntityCatalog from '@/pages/EntityCatalog'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/topology" element={<TopologyBuild />} />
           <Route path="/templates" element={<Templates />} />
+          <Route path="/entities" element={<EntityCatalog />} />
           <Route path="/templates/:id" element={<TemplateEditor />} />
           <Route path="/orchestrate" element={<Orchestrate />} />
           <Route path="/orchestrate/:templateId" element={<DeployConsole />} />

@@ -20,12 +20,13 @@ import {
   type EdgeTypes,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { placeEdgeLabels, type LabelPlacement } from '@/lib/edgeLabels'
 import { routeEdges, type EdgeRoute } from '@/lib/edgeRouting'
 import { computeLayout, INSTANCE_GAP, INSTANCE_HEADER, INSTANCE_PAD, nodeDimensions, NODE_H, NODE_W } from '@/lib/layout'
 import type { Scenario } from '@/lib/types'
+import { NODE_DRAG_MIME, receiveNodeDrop, type NodeDrop } from '@/lib/topologyEditing'
 import { nodeMeta } from './nodeMeta'
 
 type NetData = { node: Scenario['nodes'][number]; dimensions: ReturnType<typeof nodeDimensions> }
@@ -135,12 +136,14 @@ const LabeledEdge = memo((props: EdgeProps) => {
 LabeledEdge.displayName = 'LabeledEdge'
 const edgeTypes: EdgeTypes = { default: LabeledEdge }
 
-function FitLayout({ nodes, edges, request }: { nodes: Node[]; edges: ReturnType<typeof routeEdges>; request: number }) {
+function FitLayout({ nodes, edges, request, preserveViewport }: { nodes: Node[]; edges: ReturnType<typeof routeEdges>; request: number; preserveViewport?: boolean }) {
   const { fitBounds } = useReactFlow()
   const initialized = useNodesInitialized()
+  const lastFit = useRef<number | null>(null)
   const shape = nodes.filter((n) => n.type === 'net').map((n) => `${n.id}:${n.style?.width}:${n.style?.height}`).join('|') + edges.map((edge) => String(!!edge.label)).join('')
   useEffect(() => {
     if (!initialized) return
+    if (preserveViewport && lastFit.current === request) return
     const points = nodes.flatMap((node) => [node.position, { x: node.position.x + Number(node.style?.width || NODE_W), y: node.position.y + Number(node.style?.height || NODE_H) }])
     edges.forEach((edge) => {
       const route = edge.data?.route as EdgeRoute | undefined
@@ -151,9 +154,9 @@ function FitLayout({ nodes, edges, request }: { nodes: Node[]; edges: ReturnType
     if (!points.length) return
     const x = Math.min(...points.map((p) => p.x)), y = Math.min(...points.map((p) => p.y))
     const bounds = { x, y, width: Math.max(...points.map((p) => p.x)) - x, height: Math.max(...points.map((p) => p.y)) - y }
-    const frame = requestAnimationFrame(() => { void fitBounds(bounds, { padding: 0.12 }) })
+    const frame = requestAnimationFrame(() => { lastFit.current = request; void fitBounds(bounds, { padding: 0.12 }) })
     return () => cancelAnimationFrame(frame)
-  }, [shape, request, initialized, fitBounds])
+  }, [shape, request, initialized, fitBounds, preserveViewport])
   return null
 }
 
@@ -165,6 +168,8 @@ interface CanvasProps {
   selectedId?: string | null
   onSelect?: (id: string) => void
   onDragStop?: (positions: Record<string, { x: number; y: number }>) => void
+  onAddNode?: (itemId: string, drop: NodeDrop) => void
+  onAddAtCenter?: (add: (itemId: string) => void) => void
   className?: string
 }
 
@@ -180,9 +185,12 @@ function TopologyCanvasInner({
   selectedId,
   onSelect,
   onDragStop,
+  onAddNode,
+  onAddAtCenter,
   className,
 }: CanvasProps) {
-  const { zoomIn, zoomOut } = useReactFlow()
+  const { zoomIn, zoomOut, screenToFlowPosition, getNodes } = useReactFlow()
+  const canvasRef = useRef<HTMLDivElement>(null)
   const [fitRequest, setFitRequest] = useState(0)
   const [expandQuantities, setExpandQuantities] = useState(scenario.kind === 'logical')
   const [showLabels, setShowLabels] = useState(true)
@@ -195,6 +203,16 @@ function TopologyCanvasInner({
     const placements = placeEdgeLabels(nodes, routed)
     return routed.map((edge) => ({ ...edge, data: { ...edge.data, labelPlacement: placements.get(edge.id) } }))
   }, [nodes, edges])
+
+  useEffect(() => {
+    if (!editable || !onAddNode) return
+    onAddAtCenter?.((itemId) => {
+      const bounds = canvasRef.current?.getBoundingClientRect()
+      if (!bounds) return
+      receiveNodeDrop({ preventDefault() {}, clientX: bounds.left + bounds.width / 2, clientY: bounds.top + bounds.height / 2,
+        dataTransfer: { getData: () => itemId } }, screenToFlowPosition, getNodes(), onAddNode)
+    })
+  }, [editable, onAddNode, onAddAtCenter, screenToFlowPosition, getNodes])
 
   useEffect(() => {
     setNodes(layout.nodes.map((n) => n.type === 'net' ? { ...n, selected: n.id === selectedId } : n))
@@ -223,7 +241,9 @@ function TopologyCanvasInner({
         {withLabels && <label className="flex cursor-pointer items-center gap-1.5 text-ink-700"><input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} />显示连线文字</label>}
         {hasQuantities && expandQuantities && <span className="text-ink-400">编号仅用于展示，连线表示组间关系</span>}
       </div>
-      <div className="relative min-h-0 flex-1">
+      <div ref={canvasRef} className="relative min-h-0 flex-1"
+        onDragOver={(event) => { if (editable && onAddNode && Array.from(event.dataTransfer.types).includes(NODE_DRAG_MIME)) { event.preventDefault(); event.dataTransfer.dropEffect = 'copy' } }}
+        onDrop={(event) => { if (editable) receiveNodeDrop(event, screenToFlowPosition, getNodes(), onAddNode) }}>
       <ReactFlow
         nodes={nodes}
         edges={labeledEdges}
@@ -252,7 +272,7 @@ function TopologyCanvasInner({
           setNodes((prev) => refreshZones(prev))
         }}
       >
-        <FitLayout nodes={nodes} edges={labeledEdges} request={fitRequest} />
+        <FitLayout nodes={nodes} edges={labeledEdges} request={fitRequest} preserveViewport={editable && !!onAddNode} />
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#dfe7f1" />
       </ReactFlow>
       </div>

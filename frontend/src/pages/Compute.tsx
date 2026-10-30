@@ -4,6 +4,7 @@ import { api } from '@/lib/api'
 import type { ComputeRes } from '@/lib/types'
 import { Badge, Button, Card, Empty, Field, Input, Modal, Select, StatCard, Tabs, toast } from '@/components/ui'
 import { gb, money, shortTime } from '@/lib/utils'
+import { ResourceAssociation, SceneBar, useScene, useRequestGuard } from '@/components/SceneContext'
 
 const TABS = [
   { value: 'base', label: '基础信息' },
@@ -13,6 +14,8 @@ const TABS = [
 ]
 
 export default function Compute() {
+  const [scene, setScene] = useScene()
+  const beginRequest = useRequestGuard(scene)
   const [items, setItems] = useState<ComputeRes[]>([])
   const [summary, setSummary] = useState({ total: 0, online: 0, schedulable: 0 })
   const [open, setOpen] = useState(false)
@@ -39,22 +42,24 @@ export default function Compute() {
   })
 
   function load() {
+    const current = beginRequest()
     api
-      .compute()
+      .compute(scene)
       .then((r) => {
+        if (!current()) return
         setItems(r.items)
         setSummary(r.summary)
       })
-      .catch(() => toast('加载计算资源失败', 'error'))
+      .catch(() => { if (current()) { setItems([]); setSummary({ total: 0, online: 0, schedulable: 0 }); toast('加载计算资源失败', 'error') } })
   }
 
   useEffect(() => {
     load()
-  }, [])
+  }, [scene])
 
   async function submit() {
     try {
-      await api.addCompute(form)
+      await api.addCompute({ ...form, scene_ids: scene ? [scene] : [] })
       toast('计算资源已接入')
       setOpen(false)
       load()
@@ -65,6 +70,7 @@ export default function Compute() {
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={setScene} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="计算节点" value={summary.total} suffix="台" icon={<Server className="h-4 w-4" />} />
         <StatCard label="可用节点" value={summary.online} suffix="台" tone="ok" icon={<Wifi className="h-4 w-4" />} />
@@ -109,6 +115,7 @@ export default function Compute() {
                 <tr key={n.id} className="border-b border-line/70 last:border-0 hover:bg-slate-50/50">
                   <td className="px-4 py-2.5">
                     <div className="font-medium text-ink-900">{n.name}</div>
+                    <ResourceAssociation item={n} kind="compute" onSaved={load} />
                     <div className="mono-num text-[10.5px] text-ink-400">{n.cluster}</div>
                   </td>
                   <td className="px-4 py-2.5">

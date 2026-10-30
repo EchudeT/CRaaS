@@ -20,6 +20,7 @@ from .models import (
 )
 from .services import topology as topo
 from .services.executor import build_instance_nodes
+from .scene_seed import seed_scenes
 
 TEMPLATE_SEEDS = [
     ("园区网络基础排障", "education", "drill",
@@ -183,6 +184,7 @@ def seed() -> None:
     db = SessionLocal()
     try:
         if db.execute(select(Template)).scalars().first() is not None:
+            seed_scenes(db)
             return
 
         for name, industry, business, desc in TEMPLATE_SEEDS:
@@ -239,5 +241,14 @@ def seed() -> None:
         _instances(db)
         _events(db)
         db.commit()
+        # 旧演示数据也记录来源，避免被视为真实平台资源。
+        from .models import ResourceContext
+        for kind, model in (("image", Image), ("compute", ComputeNode), ("storage", StorageResource), ("network", NetworkResource)):
+            for resource in db.scalars(select(model)):
+                db.add(ResourceContext(kind=kind, resource_id=resource.id, scene_ids=[], data_origin="demo"))
+        for inst in db.scalars(select(Instance)):
+            inst.profile = {**inst.profile, "is_demo": True}
+        db.commit()
+        seed_scenes(db)
     finally:
         db.close()

@@ -10,6 +10,7 @@ from ..catalog import business_name
 from ..db import get_db
 from ..models import Template
 from ..services import topology as topo
+from ..services.scene_data import check_scene, template_context
 
 router = APIRouter(prefix="/api/templates", tags=["templates"])
 
@@ -33,6 +34,7 @@ class TemplatePatch(BaseModel):
 
 def serialize(t: Template) -> dict:
     return {
+        **template_context(t),
         "id": t.id,
         "name": t.name,
         "description": t.description,
@@ -49,7 +51,8 @@ def serialize(t: Template) -> dict:
 
 
 @router.get("")
-def list_templates(q: str = "", business: str = "", industry: str = "", db: Session = Depends(get_db)) -> dict:
+def list_templates(q: str = "", business: str = "", industry: str = "", scene: str = "", db: Session = Depends(get_db)) -> dict:
+    check_scene(scene)
     stmt = select(Template).order_by(Template.updated_at.desc())
     items = db.execute(stmt).scalars().all()
     if q:
@@ -58,6 +61,8 @@ def list_templates(q: str = "", business: str = "", industry: str = "", db: Sess
         items = [t for t in items if t.business == business]
     if industry:
         items = [t for t in items if t.industry == industry]
+    if scene:
+        items = [t for t in items if template_context(t)["scene"] == scene]
     return {"items": [serialize(t) for t in items], "total": len(items)}
 
 

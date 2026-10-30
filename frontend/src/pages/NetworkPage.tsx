@@ -4,16 +4,22 @@ import { api } from '@/lib/api'
 import type { NetworkRes } from '@/lib/types'
 import { Badge, Card, Empty, Progress, StatCard, toast } from '@/components/ui'
 import { shortTime } from '@/lib/utils'
+import { ResourceAssociation, SceneBar, useScene, useRequestGuard } from '@/components/SceneContext'
 
 export default function NetworkPage() {
+  const [scene, setScene] = useScene()
+  const beginRequest = useRequestGuard(scene)
   const [items, setItems] = useState<NetworkRes[]>([])
 
-  useEffect(() => {
-    api.network().then((r) => setItems(r.items)).catch(() => toast('加载网络资源失败', 'error'))
-  }, [])
+  function load() {
+    const current = beginRequest()
+    api.network(scene).then((r) => { if (current()) setItems(r.items) }).catch(() => { if (current()) { setItems([]); toast('加载网络资源失败', 'error') } })
+  }
+  useEffect(load, [scene])
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={setScene} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="网络资源" value={items.length} suffix="个" icon={<Network className="h-4 w-4" />} />
         <StatCard label="IP 总量" value={items.reduce((s, i) => s + i.total_ips, 0)} suffix="个" tone="muted" icon={<Share2 className="h-4 w-4" />} />
@@ -46,7 +52,7 @@ export default function NetworkPage() {
                 const usage = Math.round((n.used_ips / Math.max(n.total_ips, 1)) * 100)
                 return (
                   <tr key={n.id} className="border-b border-line/70 last:border-0 hover:bg-slate-50/50">
-                    <td className="px-4 py-2.5 font-medium text-ink-900">{n.name}</td>
+                    <td className="px-4 py-2.5 font-medium text-ink-900">{n.name}<ResourceAssociation item={n} kind="network" onSaved={load} /></td>
                     <td className="px-4 py-2.5">
                       <Badge className="border-slate-200 bg-slate-50 text-ink-500">{n.network_type}</Badge>
                     </td>

@@ -10,12 +10,13 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '@/lib/api'
 import type { Instance } from '@/lib/types'
 import { nodeMeta } from '@/components/nodeMeta'
 import { Badge, Button, Card, CardHeader, KeyValue, Modal, Progress, StatCard, toast } from '@/components/ui'
 import { cn, copy, gb, shortTime, statusLabel, statusTone } from '@/lib/utils'
+import { DataBadge, SceneBar, sceneUrl } from '@/components/SceneContext'
 
 export default function InstanceDetail() {
   const { id = '' } = useParams()
@@ -58,6 +59,12 @@ export default function InstanceDetail() {
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={inst.scene || ''} onChange={(s) => nav(sceneUrl('/instances', s))} />
+      <Card className="space-y-2 p-3 text-xs">
+        <div className="flex items-center gap-2"><DataBadge demo={inst.is_demo} /><span>{inst.scene_name}</span></div>
+        {inst.is_demo && <p className="text-ink-500">{inst.status === 'demo' ? '此实例用于展示场景关联，未创建真实资源。离线演示节点无远程访问入口，资源容量及监控指标均为演示。' : '此实例使用模拟环境，状态、访问参数和控制台用于演示，未创建真实平台资源。'}</p>}
+        <div className="flex gap-4 text-brand-600"><Link to={`/templates/${inst.template_id}`}>查看来源模板与拓扑</Link><Link to={sceneUrl('/resources', inst.scene || '')}>查看场景资源</Link><Link to={sceneUrl('/monitor', inst.scene || '')}>查看场景监控</Link></div>
+      </Card>
       <Card className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
@@ -68,7 +75,7 @@ export default function InstanceDetail() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[16px] font-semibold text-ink-900">{inst.name}</span>
                 <Badge className={statusTone(inst.status)} dot>
-                  {statusLabel[inst.status] ?? inst.status}
+                  {inst.status === 'demo' ? '离线演示' : statusLabel[inst.status] ?? inst.status}
                 </Badge>
                 <Badge className="border-slate-200 bg-slate-50 text-ink-500">{inst.business_name}</Badge>
               </div>
@@ -85,7 +92,7 @@ export default function InstanceDetail() {
               variant="secondary"
               size="sm"
               onClick={destroy}
-              disabled={inst.status === 'destroyed'}
+              disabled={inst.status === 'demo' || inst.status === 'destroyed'}
               icon={<Trash2 className="h-3.5 w-3.5" />}
             >
               销毁实例
@@ -125,7 +132,7 @@ export default function InstanceDetail() {
         <Card className="overflow-hidden">
           <CardHeader
             title="节点列表与访问方式"
-            desc="实例化完成后即可通过远程控制台访问节点"
+            desc={inst.status === 'demo' ? '演示节点清单，未部署、未分配登录信息' : inst.is_demo ? '模拟节点清单与演示访问参数' : '实例化完成后即可通过远程控制台访问节点'}
             icon={<Server className="h-4 w-4" />}
             right={
               <Badge className="border-brand-100 bg-brand-50 text-brand-600">
@@ -185,7 +192,7 @@ export default function InstanceDetail() {
                           )}
                           dot
                         >
-                          {n.status === 'running' ? '运行中' : n.status === 'stopped' ? '已停止' : '启动中'}
+                          {n.status === 'demo' ? '离线演示' : n.status === 'running' ? '运行中' : n.status === 'stopped' ? '已停止' : '启动中'}
                         </Badge>
                       </td>
                       <td className="px-4 py-2 text-right">

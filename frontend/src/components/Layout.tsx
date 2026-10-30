@@ -25,6 +25,7 @@ const NAV: { group: string; items: { to: string; label: string; icon: LucideIcon
     items: [
       { to: '/topology', label: '智能拓扑构建', icon: Workflow },
       { to: '/templates', label: '场景模板库', icon: Layers },
+      { to: '/entities', label: '三类实体目录', icon: Database },
     ],
   },
   {
@@ -54,6 +55,7 @@ const NAV: { group: string; items: { to: string; label: string; icon: LucideIcon
 ]
 
 const TITLES: Record<string, { title: string; sub?: string }> = {
+  '/entities': { title: '三类实体目录', sub: '运营商场景的实体类型、分类与别名' },
   '/': { title: '控制台总览', sub: '靶场平台即服务 · Cyber Range as a Service' },
   '/topology': { title: '智能拓扑构建平台', sub: '自然语言 → IaC 代码 → 可视化拓扑' },
   '/templates': { title: '场景模板库', sub: '场景模板的创建、校验与复用' },

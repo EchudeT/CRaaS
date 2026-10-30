@@ -9,7 +9,7 @@ from . import models  # noqa: F401  确保建表
 from .config import LLM_MODE, RESOURCE_SYNC_INTERVAL, llm_ready
 from .db import Base, SessionLocal, engine
 from .providers import driver_status
-from .routers import instances, monitor, resources, scheduler, templates, topology
+from .routers import instances, monitor, resources, scheduler, templates, topology, scenes
 from .seed import seed
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -58,7 +58,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (topology.router, templates.router, instances.router, resources.router, monitor.router, scheduler.router):
+for r in (topology.router, templates.router, instances.router, resources.router, monitor.router, scheduler.router, scenes.router):
     app.include_router(r)
 
 

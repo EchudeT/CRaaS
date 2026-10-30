@@ -1,10 +1,12 @@
 import { Activity, Boxes, Cpu, Gauge, RefreshCw, Server, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '@/lib/api'
 import type { MonitorOverview } from '@/lib/types'
 import { Badge, Button, Card, CardHeader, Modal, Progress, StatCard, toast } from '@/components/ui'
 import { cn, money } from '@/lib/utils'
+import { DataBadge, SceneBar, metricSource, sceneUrl, useScene, useRequestGuard } from '@/components/SceneContext'
 
 type History = { t: string; cpu: number; memory: number; network: number }
 
@@ -32,33 +34,47 @@ function MetricBar({
 }
 
 export default function Monitor() {
+  const [scene, setScene] = useScene()
   const [data, setData] = useState<MonitorOverview | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
   const [history, setHistory] = useState<History[]>([])
+  const [historySource, setHistorySource] = useState('')
+  const beginRequest = useRequestGuard(scene)
 
   function load() {
-    api.monitor().then(setData).catch(() => toast('加载监控数据失败', 'error'))
+    const current = beginRequest()
+    api.monitor(scene).then((r) => { if (current()) setData(r) }).catch(() => { if (current()) { setData(null); toast('加载监控数据失败', 'error') } })
   }
 
   useEffect(() => {
     load()
     const t = setInterval(load, 5000)
     return () => clearInterval(t)
-  }, [])
+  }, [scene])
 
   useEffect(() => {
     if (!selected) return
-    api.nodeHistory(selected).then((r) => setHistory(r.points)).catch(() => setHistory([]))
+    let active = true
+    setHistory([])
+    setHistorySource('')
+    api.nodeHistory(selected).then((r) => { if (active) { setHistory(r.points); setHistorySource(r.source) } }).catch(() => { if (active) setHistory([]) })
+    return () => { active = false }
   }, [selected])
 
   const node = data?.nodes.find((n) => n.id === selected)
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={(s) => { setSelected(null); setData(null); setScene(s) }} />
+      <Card className="space-y-2 p-3 text-xs text-ink-500">
+        <p>指标按场景关联的计算节点聚合；演示指标仅用于展示，实时采集与采集失败后的模拟指标分别标注。实例为场景关联，未表示已分配到某一计算节点。</p>
+        <div className="flex flex-wrap items-center gap-3"><span>关联实例：</span>{data?.instances?.map((i) => <Link key={i.id} to={`/instances/${i.id}`} className="flex items-center gap-1 text-brand-600">{i.name}<DataBadge demo={i.is_demo} /></Link>)}</div>
+        {!data?.nodes.length && <p>当前场景暂无关联监控节点。</p>}
+      </Card>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <StatCard label="资源池" value={data?.summary.pool_count ?? 0} suffix="个" icon={<Boxes className="h-4 w-4" />} />
         <StatCard label="纳管节点" value={data?.summary.node_count ?? 0} suffix="台" tone="muted" icon={<Server className="h-4 w-4" />} />
-        <StatCard label="运行实例" value={data?.summary.instance_count ?? 0} suffix="个" tone="ok" icon={<Activity className="h-4 w-4" />} />
+        <StatCard label="关联实例（含演示）" value={data?.summary.instance_count ?? 0} suffix="个" tone="ok" icon={<Activity className="h-4 w-4" />} />
         <StatCard label="平均 CPU" value={data?.summary.cpu_avg ?? 0} suffix="%" tone="brand" icon={<Gauge className="h-4 w-4" />} />
         <StatCard label="每小时成本" value={money(data?.summary.cost_per_hour ?? 0)} tone="muted" icon={<Wallet className="h-4 w-4" />} />
       </div>
@@ -66,7 +82,7 @@ export default function Monitor() {
       <div className="flex items-center justify-between">
         <div>
           <div className="text-[13.5px] font-semibold text-ink-900">资源监控中心</div>
-          <div className="mt-0.5 text-[11.5px] text-ink-500">每 5 秒刷新一次，指标为演示环境模拟数据</div>
+          <div className="mt-0.5 text-[11.5px] text-ink-500">每 5 秒刷新一次，指标来源见各节点及历史图标记</div>
         </div>
         <Button variant="secondary" size="sm" onClick={load} icon={<RefreshCw className="h-3.5 w-3.5" />}>
           刷新
@@ -84,7 +100,7 @@ export default function Monitor() {
                     <div className="flex items-center gap-2">
                       <span className="text-[12.5px] font-semibold text-ink-900">{p.name}</span>
                       <Badge className="border-ok/25 bg-ok/10 text-ok" dot>
-                        在线
+                        {data?.nodes.filter((n) => n.site === p.name).every((n) => n.is_demo) ? '演示资源池' : '资源池'}
                       </Badge>
                     </div>
                     <div className="mt-0.5 text-[11px] text-ink-400">
@@ -131,12 +147,13 @@ export default function Monitor() {
                 <div className="flex items-center justify-between">
                   <span className="mono-num text-[12px] font-semibold text-ink-900">{n.name}</span>
                   <span className="flex items-center gap-1 text-[10px] text-ok">
-                    <span className="h-1.5 w-1.5 animate-pulse-ring rounded-full bg-ok" /> 在线
+                    {metricSource(n.metrics.source)}
                   </span>
                 </div>
                 <div className="mt-0.5 truncate text-[10px] text-ink-400">
                   {n.site} · {n.cpu_cores} 核 · {n.gpu ? n.gpu : '无 GPU'}
                 </div>
+                <div className="mt-1 text-[10px] text-brand-600">{n.scene_names?.join(' · ') || '场景未关联'} {n.is_demo ? '· 演示数据' : ''}</div>
                 <div className="mt-2 grid grid-cols-4 gap-2">
                   <MetricBar label="CPU" value={n.metrics.cpu} />
                   <MetricBar label="内存" value={n.metrics.memory} />
@@ -156,6 +173,7 @@ export default function Monitor() {
         desc={`${node?.site ?? ''} · ${node?.ip ?? ''} · ${node?.cpu_cores ?? 0} 核`}
         width="max-w-3xl"
       >
+        <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-ink-500"><span>当前：{metricSource(node?.metrics.source)} · 历史：{metricSource(historySource)}</span><Link className="text-brand-600" to={sceneUrl('/resources/compute', scene)}>查看关联计算资源</Link></div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             ['CPU', node?.metrics.cpu ?? 0],

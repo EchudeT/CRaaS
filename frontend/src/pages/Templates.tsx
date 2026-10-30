@@ -5,22 +5,26 @@ import { api, type Meta } from '@/lib/api'
 import type { Template } from '@/lib/types'
 import { Badge, Button, Card, Empty, Input, Select, toast } from '@/components/ui'
 import { shortTime } from '@/lib/utils'
+import { SceneBar, DataBadge, useScene, useRequestGuard } from '@/components/SceneContext'
 
 export default function Templates() {
   const nav = useNavigate()
+  const [scene, setScene] = useScene()
   const [items, setItems] = useState<Template[]>([])
   const [meta, setMeta] = useState<Meta | null>(null)
   const [q, setQ] = useState('')
   const [biz, setBiz] = useState('')
   const [loading, setLoading] = useState(true)
+  const beginRequest = useRequestGuard(`${scene}/${q}/${biz}`)
 
   function load() {
+    const current = beginRequest()
     setLoading(true)
     api
-      .templates({ q, business: biz })
-      .then((r) => setItems(r.items))
-      .catch(() => toast('加载模板失败', 'error'))
-      .finally(() => setLoading(false))
+      .templates({ q, business: biz, scene })
+      .then((r) => { if (current()) setItems(r.items) })
+      .catch(() => { if (current()) { setItems([]); toast('加载模板失败', 'error') } })
+      .finally(() => { if (current()) setLoading(false) })
   }
 
   useEffect(() => {
@@ -31,7 +35,7 @@ export default function Templates() {
     const t = setTimeout(load, 250)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, biz])
+  }, [q, biz, scene])
 
   const bizOptions = useMemo(
     () => [{ value: '', label: '全部业务' }, ...(meta?.business ?? []).map((b) => ({ value: b.id, label: b.name }))],
@@ -50,6 +54,18 @@ export default function Templates() {
 
   return (
     <div className="space-y-4">
+      <SceneBar scene={scene} onChange={setScene} />
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {items.filter((t) => t.source === 'example').map((t) => <Link key={t.id} to={`/templates/${t.id}`}>
+          <Card hover className="h-full space-y-2 p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold">{t.name}<DataBadge demo={t.is_demo} /></div>
+            <div className="text-xs text-brand-600">{t.scene_name}</div>
+            <div className="text-xs text-ink-500">{t.node_count} 类设备 · {t.topology.meta.host_count} 台/个实体 · {t.topology.links.length} 条关系</div>
+            <div className="text-xs text-ink-500">{t.sample_id} · 含数量、接口及原文依据</div>
+            <div className="text-xs text-brand-600">直接打开示例，无需调用模型 →</div>
+          </Card>
+        </Link>)}
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
@@ -57,7 +73,7 @@ export default function Templates() {
           </div>
           <div>
             <div className="text-[15px] font-semibold text-ink-900">私有场景模板</div>
-            <div className="text-[11.5px] text-ink-400">共 {items.length} 个模板，支持搜索、校验与一键部署</div>
+            <div className="text-[11.5px] text-ink-400">共 {items.length} 个模板；逻辑拓扑需完成资源映射后部署</div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -101,6 +117,7 @@ export default function Templates() {
                       {t.name}
                     </Link>
                     <div className="mt-0.5 truncate text-[11px] text-ink-400">{t.description}</div>
+                    <div className="mt-1 flex items-center gap-2 text-[11px] text-brand-600">{t.scene_name}<DataBadge demo={t.is_demo} /></div>
                   </td>
                   <td className="px-4 py-3">
                     <Badge className="border-brand-100 bg-brand-50 text-brand-600">{t.business_name}</Badge>
@@ -109,7 +126,7 @@ export default function Templates() {
                   <td className="mono-num px-4 py-3 text-ink-700">{t.node_count}</td>
                   <td className="px-4 py-3">
                     <Badge className="border-slate-200 bg-slate-50 text-ink-500">
-                      {t.source === 'llm' ? 'LLM 生成' : '规则引擎'}
+                      {t.source === 'example' ? '内置示例' : t.source === 'llm' ? 'LLM 生成' : '规则引擎'}
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-ink-500">{shortTime(t.updated_at)}</td>
@@ -123,7 +140,9 @@ export default function Templates() {
                       </button>
                       <button
                         onClick={() => nav(`/orchestrate/${t.id}`)}
-                        className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11.5px] text-ink-600 transition-colors hover:bg-brand-50 hover:text-brand-600"
+                        disabled={t.topology.kind === 'logical'}
+                        title={t.topology.kind === 'logical' ? '逻辑拓扑尚未映射实际资源' : undefined}
+                        className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11.5px] text-ink-600 transition-colors hover:bg-brand-50 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Boxes className="h-3 w-3" /> 部署
                       </button>
